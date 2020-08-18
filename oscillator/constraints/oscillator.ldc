@@ -1,0 +1,36 @@
+set architecture "LIFCL"
+set device "LIFCL-40"
+set package "QFN72"
+set speed "9_High-Performance_1.0V"
+set WRAPPER_INST "lscc_osc_inst"
+set HF_OSC_EN "ENABLED"
+set HF_CLK_DIV_DEC 10
+set HF_CLK_DIV "9"
+set HF_CFG_EN "ENABLED"
+set LF_OUTPUT_EN "ENABLED"
+set SEDCLK_EN 0
+set HF_SED_SEC_DIV_DEC 2
+set HF_SED_SEC_DIV "1"
+set FAMILY "LIFCL"
+
+
+set CLK_FREQ_HF [expr {double(round(450000000/$HF_CLK_DIV_DEC))/1000000}]
+set CLK_PERIOD_HF [expr {double(round(1000000/$CLK_FREQ_HF))/1000}]
+
+set CLK_PERIOD_LF [expr (round(1000000/32))]
+
+set CLK_FREQ_SEDSEC [expr {double(round(450000000/$HF_SED_SEC_DIV_DEC))/1000000}]
+set CLK_PERIOD_SEDSEC [expr {double(round(1000000/$CLK_FREQ_SEDSEC))/1000}]
+
+if {$HF_OSC_EN == "ENABLED"} {
+    create_clock -name {hf_clk_out_o} -period $CLK_PERIOD_HF [get_ports hf_clk_out_o]
+    }
+
+if {$LF_OUTPUT_EN == "ENABLED"} {
+    create_clock -name {lf_clk_out_o} -period $CLK_PERIOD_LF [get_ports lf_clk_out_o]
+    }
+
+if {($SEDCLK_EN == 1) || ($SEDCLK_EN == 2)} {
+    create_clock -name {hf_sed_sec_out_o} -period $CLK_PERIOD_SEDSEC [get_ports hf_sed_sec_out_o]
+    }
+	

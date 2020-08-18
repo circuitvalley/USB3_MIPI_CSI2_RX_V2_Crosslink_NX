@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RadiantProject version="4.1" title="mipi_csi_bridge" device="LIFCL-40-9SG72I" performance_grade="9_High-Performance_1.0V" default_implementation="mipi_csi_bridge">
+    <Options/>
+    <Implementation title="mipi_csi_bridge" dir="mipi_csi_bridge" description="mipi_csi_bridge" synthesis="lse" default_strategy="Strategy1">
+        <Options def_top="mipi_bridge"/>
+        <Source name="source/mipi_csi_bridge/mipi_csi_bridge.v" type="Verilog" type_short="Verilog">
+            <Options top_module="mipi_bridge"/>
+        </Source>
+        <Source name="source/mipi_csi_bridge/debayer_filter.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="source/mipi_csi_bridge/mipi_csi_packet_decoder.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="source/mipi_csi_bridge/mipi_rx_byte_aligner.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="source/mipi_csi_bridge/mipi_rx_lane_aligner.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="source/mipi_csi_bridge/mipi_rx_raw10_depacker.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="source/mipi_csi_bridge/output_reformatter.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="source/mipi_csi_bridge/rgb_to_yuv.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="source/mipi_csi_bridge/tb_mipi_bridge.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="mipi_csi_phy/mipi_csi_phy.ipx" type="IPX_Module" type_short="IPX">
+            <Options/>
+        </Source>
+        <Source name="line_ram_dp/line_ram_dp.ipx" type="IPX_Module" type_short="IPX">
+            <Options/>
+        </Source>
+        <Source name="oscillator/oscillator.ipx" type="IPX_Module" type_short="IPX">
+            <Options/>
+        </Source>
+        <Source name="mipi_csi_bridge/mipi_csi_bridge.pdc" type="Physical Constraints File" type_short="PDC">
+            <Options/>
+        </Source>
+    </Implementation>
+    <Strategy name="Strategy1" file="mipi_csi_bridge1.sty"/>
+</RadiantProject>
