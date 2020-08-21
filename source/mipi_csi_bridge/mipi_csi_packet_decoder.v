@@ -24,18 +24,23 @@ module mipi_csi_packet_decoder(
 								data_i,
 								output_valid_o,
 								data_o,
-								packet_length
+								packet_length_o,
+								packet_type_o
 								);
 								
 localparam [7:0]SYNC_BYTE = 8'hB8;
 localparam [3:0]LANES = 3'h4;
 localparam [7:0]MIPI_CSI_PACKET_10bRAW = 8'h2B;
+localparam [7:0]MIPI_CSI_PACKET_12bRAW = 8'h2C;
+localparam [7:0]MIPI_CSI_PACKET_14bRAW = 8'h2D;
 input clk_i;
 input data_valid_i;
 input [31:0]data_i;
 output reg output_valid_o;
 output reg [31:0]data_o;
-output reg [31:0]packet_length;
+output reg [31:0]packet_length_o;
+output reg [1:0]packet_type_o;
+
 reg [31:0]packet_length_reg;
 
 reg [31:0]last_data_i;
@@ -52,17 +57,19 @@ begin
 		begin
 			packet_length_reg <= packet_length_reg - LANES;
 		end
-		else if (last_data_i[7:0] == SYNC_BYTE && data_i[7:0] == MIPI_CSI_PACKET_10bRAW)
+		else if (last_data_i[7:0] == SYNC_BYTE && (data_i[7:0] == MIPI_CSI_PACKET_10bRAW || data_i[7:0] == MIPI_CSI_PACKET_12bRAW || data_i[7:0] == MIPI_CSI_PACKET_14bRAW) )
 		begin
-			packet_length_reg <= {data_i[23:16], data_i[15:8]};
-			packet_length <= {data_i[23:16], data_i[15:8]};
+				packet_type_o <= data_i[1:0];
+				packet_length_reg <= {data_i[23:16], data_i[15:8]};
+				packet_length_o <= {data_i[23:16], data_i[15:8]};
 		end
 	end
 	else 
 	begin
+		packet_type_o <= 2'h0;
 		last_data_i <=32'h0;
 		data_o <=32'h0;
-		packet_length <= 32'h0;
+		packet_length_o <= 32'h0;
 		packet_length_reg <= 32'h0;
 		output_valid_o <= 1'h0;
 	end

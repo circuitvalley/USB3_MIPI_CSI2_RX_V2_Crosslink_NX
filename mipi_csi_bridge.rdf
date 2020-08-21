@@ -21,6 +21,9 @@
         <Source name="source/mipi_csi_bridge/mipi_rx_raw10_depacker.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
+        <Source name="source/mipi_csi_bridge/mipi_rx_raw12_depacker.v" type="Verilog" type_short="Verilog" excluded="TRUE">
+            <Options/>
+        </Source>
         <Source name="source/mipi_csi_bridge/output_reformatter.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
@@ -28,6 +31,9 @@
             <Options/>
         </Source>
         <Source name="source/mipi_csi_bridge/tb_mipi_bridge.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="source/mipi_csi_bridge/tb_debayer_filter.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
             <Options/>
         </Source>
         <Source name="mipi_csi_phy/mipi_csi_phy.ipx" type="IPX_Module" type_short="IPX">
@@ -39,7 +45,13 @@
         <Source name="oscillator/oscillator.ipx" type="IPX_Module" type_short="IPX">
             <Options/>
         </Source>
+        <Source name="out_line_ram_dp/out_line_ram_dp.ipx" type="IPX_Module" type_short="IPX">
+            <Options/>
+        </Source>
         <Source name="mipi_csi_bridge/mipi_csi_bridge.pdc" type="Physical Constraints File" type_short="PDC">
+            <Options/>
+        </Source>
+        <Source name="sim/sim.spf" type="Simulation Project File" type_short="SPF">
             <Options/>
         </Source>
     </Implementation>
