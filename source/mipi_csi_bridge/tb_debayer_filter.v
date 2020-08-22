@@ -56,7 +56,7 @@ wire synced;
 
 
 
-mipi_rx_raw10_depacker ins2(	.clk_i(clk),
+mipi_rx_raw_depacker ins2(	.clk_i(clk),
 						.data_valid_i(bytes_valid),
 						.data_i(bytes_i),
 						.output_valid_o(unpacked_valid),
