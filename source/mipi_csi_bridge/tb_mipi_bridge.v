@@ -9,6 +9,8 @@ module tb_mipi_bridge();
 	wire [3:0]data_lpp;
 	wire [3:0]data_lpn;
 	
+	wire mipi_clk_n;
+	wire [3:0]mipi_data_n;
 	reg  clk_lpp_r; 
 	reg clk_lpn_r;
 	reg [3:0]data_lpp_r;
@@ -21,34 +23,31 @@ module tb_mipi_bridge();
 	wire fsync;
 	wire lsync;
 wire reset_g;
-GSR GSR_INST (.GSR (reset_g));
-PUR PUR_INST (.PUR (reset_g)); 
+GSR 
+GSR_INST (
+	.GSR_N(1'b1),
+	.CLK(1'b0)
+);
+ 
 
-assign clk_lpp = clk_lpp_r;
-assign clk_lpn = clk_lpn_r;
-assign data_lpp = data_lpp_r;
-assign data_lpn = data_lpn_r;
+assign mipi_clk_n = !mipi_clk;
+assign mipi_data_n = ~mipi_data;
 
-mipi_bridge ins1(	.clk_i(clk),
-					.reset_in(reset),
-					.mipi_clk_in(mipi_clk),
-					.mipi_clk_lpp_io(clk_lpp),
-					.mipi_clk_lpn_io(clk_lpn),
-					.mipi_data_in(mipi_data),
-					.mipi_data_lpp_io(data_lpp),
-					.mipi_data_lpn_io(data_lpn),
+mipi_bridge ins1(	.reset_in(reset),
+					.mipi_clk_n_in(mipi_clk_n),
+					.mipi_clk_p_in(mipi_clk),
+					.mipi_data_p_in(mipi_data),
+					.mipi_data_n_in(mipi_data_n),
 
-					.clk_out(pclk), 
-					.data_out(data),
-					.fsyn_out(fsync),
-					.lsync_out(lsync),
-					.debug_E3(),
-					.debug_F3(),
-					.debug_B1(),
-					.debug_D3(),
-					.byte_clock_debug_H6());
+
+					.pclk_o(pclk), 
+					.data_o(data),
+					.fsync_o(fsync),
+					.lsync_o(lsync),
+					.frame_sync_in(!clk_lpn_r),
+					.line_sync_in(data_lpn_r[0])
+					);
 					
-
 	
 initial begin										//genrate 90 phase clock and slow sync clock
 	clk = 1'b0;
@@ -76,6 +75,12 @@ task send_mipi_frame;
 		 for (i= 16'd0; i <16'd10 ; i = i +1'd1)
 		 begin
 		 send_line();
+         send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
 		 #20;
 		 end
 		 send_mipi_clock();
@@ -92,6 +97,156 @@ task send_mipi_frame;
 		 clk_lpn_r = 1;
 
 	 end
+endtask
+
+
+task send_mipi_frame12;
+	 reg [15:0]i= 16'd0;
+	 begin
+		 clk_lpp_r = 0;
+		 clk_lpn_r = 0;
+		 #5
+		 send_mipi_clock();		 
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();		 
+		 send_mipi_clock();		 
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 for (i= 16'd0; i <16'd10 ; i = i +1'd1)
+		 begin
+		 send_line12();
+		 #20;
+		 end
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 #5
+		 clk_lpp_r = 1;
+		 clk_lpn_r = 1;
+
+	 end
+endtask
+
+task send_mipi_frame14;
+	 reg [15:0]i= 16'd0;
+	 begin
+		 clk_lpp_r = 0;
+		 clk_lpn_r = 0;
+		 #5
+		 send_mipi_clock();		 
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();		 
+		 send_mipi_clock();		 
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 for (i= 16'd0; i <16'd10 ; i = i +1'd1)
+		 begin
+		 send_line14();
+		 #20;
+		 end
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 send_mipi_clock();
+		 #5
+		 clk_lpp_r = 1;
+		 clk_lpn_r = 1;
+
+	 end
+endtask
+
+task send_line14;
+	reg[15:0]i = 16'b0;
+	begin
+	
+
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		data_lpp_r = 4'b0;
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		data_lpn_r = 4'b0;
+		send_mipi_byte(32'hB8B8B8B8);
+		send_mipi_byte(32'h2D200D00);
+		for (i= 16'b0; i < 16'd120 ; i = i+1)
+		begin
+			send_mipi_byte(32'h00FF55AA);
+			send_mipi_byte(32'h00000000);
+			send_mipi_byte(32'hFF55AA00);
+			send_mipi_byte(32'h000000FF);
+			send_mipi_byte(32'h55AA0000);
+			send_mipi_byte(32'h0000FF55);
+			send_mipi_byte(32'hAA000000);
+		end
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		data_lpp_r = 4'b1111;
+		data_lpn_r = 4'b1111;
+		
+	end
+endtask
+
+task send_line12;
+	reg[15:0]i = 16'b0;
+	begin
+	
+
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		data_lpp_r = 4'b0;
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		data_lpn_r = 4'b0;
+		send_mipi_byte(32'hB8B8B8B8);
+		send_mipi_byte(32'h2C400B00);
+		for (i= 16'b0; i < 16'd120 ; i = i+1)
+		begin
+			send_mipi_byte(32'h00FF0055);
+			send_mipi_byte(32'hAA0000FF);
+			send_mipi_byte(32'h0055AA00);
+			send_mipi_byte(32'h00FF0055);
+			send_mipi_byte(32'hAA0000FF);
+			send_mipi_byte(32'h0055AA00);
+		end
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();		
+		data_lpp_r = 4'b1111;
+		data_lpn_r = 4'b1111;
+		
+	end
 endtask
 
 task send_line;
@@ -111,14 +266,20 @@ task send_line;
 		send_mipi_byte(32'h2B600900);
 		for (i= 16'b0; i < 16'd120 ; i = i+1)
 		begin
-			send_mipi_byte(32'h00FF55AA);
+			send_mipi_byte(32'h00FF55AA); //MSB to lane 0 and LSB to lane 3
 			send_mipi_byte(32'h0000FF55);
 			send_mipi_byte(32'hAA0000FF);
 			send_mipi_byte(32'h55AA0000);
 			send_mipi_byte(32'hFF55AA00);
 		end
+		send_mipi_byte(32'h33333333);
+		//send_mipi_clock();
+		send_mipi_byte(32'h12345678);
 		send_mipi_clock();
-		send_mipi_clock();		
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
+		send_mipi_clock();
 		data_lpp_r = 4'b1111;
 		data_lpn_r = 4'b1111;
 		
@@ -162,9 +323,12 @@ initial begin
 	send_mipi_frame();
 	#200
 	send_mipi_frame();
+	#200
+	send_mipi_frame14();
 
 	#200
-	send_mipi_frame();
+	send_mipi_frame12();
+	$finish;
 end
 
 endmodule
