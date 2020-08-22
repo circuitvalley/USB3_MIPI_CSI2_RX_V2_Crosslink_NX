@@ -13,7 +13,7 @@ work.  If not, see <http://creativecommons.org/licenses/by/3.0/>.
 /*
 Basically a packet Stripper, removes header and footer from packet 
 Takes lane aligned data from lane aligner @ mipi byte clock
-looks for specific packet type, in this case RAW10bit 0x2B
+looks for specific packet types, in this case RAW10bit 0x2B RAW12bit 0x2C and RAW14bit 0x2D , Packet type is also output to be used in next modules
 outputs Stripped bytes in exactly the way they were received.
 this module also fetch packet length and output_valid is active as long as input data is valid and packet length is still valid.
 */
@@ -39,7 +39,7 @@ input [31:0]data_i;
 output reg output_valid_o;
 output reg [31:0]data_o;
 output reg [31:0]packet_length_o;
-output reg [1:0]packet_type_o;
+output reg [2:0]packet_type_o;
 
 reg [31:0]packet_length_reg;
 
@@ -59,14 +59,14 @@ begin
 		end
 		else if (last_data_i[7:0] == SYNC_BYTE && (data_i[7:0] == MIPI_CSI_PACKET_10bRAW || data_i[7:0] == MIPI_CSI_PACKET_12bRAW || data_i[7:0] == MIPI_CSI_PACKET_14bRAW) )
 		begin
-				packet_type_o <= data_i[1:0];
+				packet_type_o <= data_i[2:0];
 				packet_length_reg <= {data_i[23:16], data_i[15:8]};
 				packet_length_o <= {data_i[23:16], data_i[15:8]};
 		end
 	end
 	else 
 	begin
-		packet_type_o <= 2'h0;
+		packet_type_o <= 3'h0;
 		last_data_i <=32'h0;
 		data_o <=32'h0;
 		packet_length_o <= 32'h0;
