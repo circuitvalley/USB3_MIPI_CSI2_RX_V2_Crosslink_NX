@@ -26,11 +26,16 @@ module mipi_bridge(	reset_in,
 					pclk_o, 
 					data_o,
 					fsync_o,
-					lsync_o
+					lsync_o,
+					
+					frame_sync_in,
+					line_sync_in
 					);
 					
 parameter MIPI_LANES = 4;
-
+input frame_sync_in;
+input line_sync_in;
+					
 input reset_in;
 input mipi_clk_p_in;
 input mipi_clk_n_in;
@@ -67,39 +72,43 @@ wire [31:0]mipi_data_raw;
 wire [31:0]byte_aligned;
 wire [31:0]lane_aligned;
 wire [31:0]decoded_data;
-wire [1:0]packet_type;
+wire [2:0]packet_type;
 wire [31:0]packet_length;
-wire [39:0]unpacked_data;
-wire [119:0]rgb_data;
+wire [63:0]unpacked_data;
+wire [191:0]rgb_data;
 wire [63:0]yuv_data;
 
 wire byte_aligner_reset;
-wire frame_sync_in;
+//wire frame_sync_in;
 assign reset = !reset_in;
+
+
+assign byte_aligner_reset = line_sync_in;
 
 oscillator oscillator_inst0(.hf_out_en_i(1'b1), 
 							 .hf_clk_out_o(mipi_out_clk), 
 							 .lf_clk_out_o(osc_clk));
 
+	
 
 mipi_csi_phy mipi_csi_phy_inst0(	.sync_clk_i(osc_clk), 
 									.sync_rst_i(reset), 
-								    .lmmi_clk_i(osc_clk), 
-									.lmmi_resetn_i(), 
-									.lmmi_wdata_i(), 
-									.lmmi_wr_rdn_i(), 
-									.lmmi_offset_i(), 
-									.lmmi_request_i(), 
-									.lmmi_ready_o(), 
-									.lmmi_rdata_o(), 
-									.lmmi_rdata_valid_o(), 
+								   // .lmmi_clk_i(osc_clk), 
+									//.lmmi_resetn_i(), 
+									//.lmmi_wdata_i(), 
+									//.lmmi_wr_rdn_i(), 
+									//.lmmi_offset_i(), 
+									//.lmmi_request_i(), 
+									//.lmmi_ready_o(), 
+									//.lmmi_rdata_o(), 
+									//.lmmi_rdata_valid_o(), 
 									.hs_rx_en_i(1'b1), 
 									.hs_rx_data_o(mipi_data_raw), 
-									.hs_rx_data_sync_o(), 
+									//.hs_rx_data_sync_o(), 
 									.lp_rx_en_i(1'b0), 
-									.lp_rx_data_p_o(byte_aligner_reset), 
+									.lp_rx_data_p_o(),//byte_aligner_reset), 
 									.lp_rx_data_n_o(), 
-									.lp_rx_clk_p_o(frame_sync_in), 
+									.lp_rx_clk_p_o(),//frame_sync_in), 
 									.lp_rx_clk_n_o(), 
 									.pll_lock_i(1'b1), 
 									.clk_p_io(mipi_clk_p_in), 
@@ -140,7 +149,7 @@ mipi_rx_byte_aligner mipi_rx_byte_aligner_3(	.clk_i(mipi_byte_clock),
 									.byte_valid_o(is_byte_valid[3]));
 
 mipi_rx_lane_aligner mipi_rx_lane_aligner(	.clk_i(mipi_byte_clock),
-									.reset_i(reset),
+									.reset_i(byte_aligner_reset),
 									.bytes_valid_i(is_byte_valid),
 									.byte_i(byte_aligned),
 									.lane_valid_o(is_lane_aligned_valid),
@@ -165,7 +174,7 @@ mipi_rx_raw_depacker mipi_rx_raw_depacker_0(.clk_i(mipi_byte_clock),
 
 
 debayer_filter debayer_filter_0(.clk_i(mipi_byte_clock),
-								.reset_i(frame_sync_in),
+								.reset_i(!frame_sync_in),
 								.line_valid_i(is_decoded_valid),
 								.data_i(unpacked_data),
 								.data_valid_i(is_unpacked_valid),
@@ -174,7 +183,7 @@ debayer_filter debayer_filter_0(.clk_i(mipi_byte_clock),
 								.debug_out());
 
 rgb_to_yuv rgb_to_yuv_0(.clk_i(mipi_byte_clock),
-					    .reset_i(frame_sync_in),
+					    .reset_i(!frame_sync_in),
 					    .rgb_i(rgb_data),
 					    .rgb_valid_i(is_rgb_valid),
 					    .yuv_o(yuv_data),
@@ -182,13 +191,13 @@ rgb_to_yuv rgb_to_yuv_0(.clk_i(mipi_byte_clock),
 
 
 output_reformatter out_reformatter_0(  .clk_i(mipi_byte_clock),
-															 .line_sync_i(is_decoded_valid),
-															 .frame_sync_i(frame_sync_in),
-															 .output_clk_i(mipi_out_clk),
-															 .data_i(yuv_data),
-															 .data_in_valid_i(is_yuv_valid),
-															 .output_o(data_o),
-															 .output_valid_o(lsync_o));
+									 .line_sync_i(is_decoded_valid),
+									 .frame_sync_i(frame_sync_in),
+									 .output_clk_i(mipi_out_clk),
+									 .data_i(yuv_data),
+									 .data_in_valid_i(is_yuv_valid),
+									 .output_o(data_o),
+									 .output_valid_o(lsync_o));
 
 
 
