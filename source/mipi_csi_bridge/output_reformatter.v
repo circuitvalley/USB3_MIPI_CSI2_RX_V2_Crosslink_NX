@@ -38,8 +38,8 @@ output [31:0]output_o;
 input output_clk_i;
 
 
-reg [9:0] write_address;
-reg [10:0] read_address;
+reg [10:0] write_address;
+reg [11:0] read_address;
 
 
 wire [31:0]ram_even_o;
@@ -49,8 +49,7 @@ reg [10:0] input_pixel_count;
 reg line_even_nodd;				//select between two different RAM
 reg last_line_sync;				//helps to determine edge of line sync for write address reset
 reg last_line_even_nodd;		//helps to determine edge of line sync for read address reset
-
-
+ 
 
 out_line_ram_dp line_odd(	.wr_clk_i(!clk_i), 
 							.rd_clk_i(output_clk_i), 
@@ -59,7 +58,7 @@ out_line_ram_dp line_odd(	.wr_clk_i(!clk_i),
 							.rd_en_i(line_even_nodd), 
 							.rd_clk_en_i(1'b1), 
 							.wr_en_i(!line_even_nodd), 
-							.wr_data_i(data_i), 
+							.wr_data_i({data_i[31:0], data_i[63:32]}), 
 							.wr_addr_i(write_address), 
 							.rd_addr_i(read_address), 
 							.rd_data_o(ram_odd_o));
@@ -72,12 +71,41 @@ out_line_ram_dp line_even(	.wr_clk_i(!clk_i),
 							.rd_en_i(!line_even_nodd), 
 							.rd_clk_en_i(1'b1), 
 							.wr_en_i(line_even_nodd), 
+							.wr_data_i({data_i[31:0], data_i[63:32]}), 
+							.wr_addr_i(write_address), 
+							.rd_addr_i(read_address), 
+							.rd_data_o(ram_even_o)); 
+
+/*
+out_line_ram_ldp line_odd(	.clk_i((line_even_nodd)?!clk_i:output_clk_i), 
+							.dps_i(1'b1), 
+							.rst_i(!frame_sync_i), 
+							.wr_clk_en_i(data_in_valid_i), 
+							.rd_clk_en_i(!line_even_nodd), 
+							.wr_en_i(line_even_nodd), 
 							.wr_data_i(data_i), 
 							.wr_addr_i(write_address), 
 							.rd_addr_i(read_address), 
-							.rd_data_o(ram_even_o));
+							.rd_data_o(ram_even_o), 
+							.lramready_o(), 
+							.rd_datavalid_o());
+							
+out_line_ram_ldp line_even(	.clk_i((!line_even_nodd)?!clk_i:output_clk_i), 
+							.dps_i(1'b1), 
+							.rst_i(!frame_sync_i), 
+							.wr_clk_en_i(data_in_valid_i), 
+							.rd_clk_en_i(line_even_nodd), 
+							.wr_en_i(!line_even_nodd), 
+							.wr_data_i(data_i), 
+							.wr_addr_i(write_address), 
+							.rd_addr_i(read_address), 
+							.rd_data_o(ram_odd_o), 
+							.lramready_o(), 
+							.rd_datavalid_o()) ;
+*/
+//assign output_o = line_even_nodd? ram_odd_o[((read_address[0])?6'd32:6'd0) +:32]: ram_even_o[((read_address[0])?6'd32:6'd0) +:32]; //depeding on line select even or odd ram , also select correct 32bit word from 64 bit ramoutput
 
-assign output_o = line_even_nodd? ram_odd_o: ram_even_o;
+assign output_o = line_even_nodd? ram_odd_o:ram_even_o; //depeding on line select even or odd ram 
 
 always @(posedge line_sync_i or negedge frame_sync_i)
 begin
