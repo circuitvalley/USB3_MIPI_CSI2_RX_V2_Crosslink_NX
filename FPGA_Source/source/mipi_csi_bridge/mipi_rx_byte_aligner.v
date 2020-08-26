@@ -39,9 +39,10 @@ reg [3:0]i;
 reg [7:0] last_byte;
 wire [16:0]word;
 
-// TODO: Optimize first byte output;
 
 assign word = {byte_i, last_byte};
+ 
+
 always @(negedge clk_i)
 begin
 	if (reset_i)
@@ -49,6 +50,7 @@ begin
 		last_byte <= 8'h0;
 		byte_valid_o <= 1'b0;
 		offset <= 3'h0;
+		byte_o <= SYNC_BYTE; //first byte output is always sync byte once byte_valid_o is high
 	end
 	else
 	begin
@@ -57,19 +59,18 @@ begin
 		
 		if (!byte_valid_o)
 		begin
-		 for (i= 8'h0; i < 8; i = i + 1'h1)
+		 for (i= 8'h0; i < 8; i = i + 1'h1) //need to have loop 8 time not 9 because if input bytes are already aligned they will fall on last_byte or byte_i
 			begin
-				if ( (word[(i + 1'h1 ) +: 8] == SYNC_BYTE))
+				if ((word[(i + 1'h1 ) +: 8] == SYNC_BYTE))
 					begin
 						byte_valid_o <= 1'h1;
 						offset  <= i[2:0] + 1'b1;
-						byte_o <=  SYNC_BYTE; //first byte output if sync found is always going to be the syncbyte itself
 					end
 			end
 		end
 		else
 		begin
-				byte_o <= word[offset +:8]; // from offset 8bits upwards
+			byte_o <= word[offset +:8]; // from offset 8bits upwards
 		end
 	end
 	
