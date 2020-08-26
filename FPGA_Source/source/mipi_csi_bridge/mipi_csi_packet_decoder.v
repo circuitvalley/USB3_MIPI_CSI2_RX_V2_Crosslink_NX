@@ -52,16 +52,16 @@ begin
 		last_data_i <= data_i;
 		output_valid_o <= |packet_length_reg;
 		data_o <= data_i;
-		
+
 		if (|packet_length_reg)
 		begin
 			packet_length_reg <= packet_length_reg - LANES;
 		end
-		else if (last_data_i[7:0] == SYNC_BYTE && (data_i[7:0] == MIPI_CSI_PACKET_10bRAW || data_i[7:0] == MIPI_CSI_PACKET_12bRAW || data_i[7:0] == MIPI_CSI_PACKET_14bRAW) )
+		else if (last_data_i[7:0] == SYNC_BYTE && (data_i[7:0] == MIPI_CSI_PACKET_10bRAW || data_i[7:0] == MIPI_CSI_PACKET_12bRAW || data_i[7:0] == MIPI_CSI_PACKET_14bRAW))
 		begin
-				packet_type_o <= data_i[2:0];
-				packet_length_reg <= {data_i[23:16], data_i[15:8]};
-				packet_length_o <= {data_i[23:16], data_i[15:8]};
+			packet_type_o <= data_i[2:0];
+			packet_length_o <= {data_i[23:16], data_i[15:8]};
+			packet_length_reg <= {data_i[23:16], data_i[15:8]};
 		end
 	end
 	else 

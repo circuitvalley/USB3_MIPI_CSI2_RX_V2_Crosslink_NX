@@ -9,11 +9,13 @@ module tb_rx_byte_aligner;
 	wire synced;
 
 wire reset_g;
-GSR GSR_INST (.GSR (reset_g));
-PUR PUR_INST (.PUR (reset_g)); 
+GSR 
+GSR_INST (
+	.GSR_N(1'b1),
+	.CLK(1'b0)
+);
 
-
-rx_byte_aligner inst1(	.clk_i(clk),
+mipi_rx_byte_aligner inst1(	.clk_i(clk),
 						.reset_i(reset),
 						.byte_i(byte_i),
 						.byte_o(byte_o),
@@ -33,6 +35,10 @@ endtask
 initial begin
 		clk = 1'b1;
 		reset = 1'b1;
+		clk = 1'b1;
+		#4
+		clk = 1'b0;
+		#4;
 		#50
 		reset = 1'b0;
 		sendbyte(8'h00);
@@ -52,7 +58,13 @@ initial begin
 		sendbyte(8'h22);
 		sendbyte(8'h02);
 		reset = 1'h1;
+		#5
+		clk = 1'b1;
+		#4
+		clk = 1'b0;
+		#4;
 		#50
+		
 		reset = 1'b0;
 		sendbyte(8'h00);
 		sendbyte(8'h00);
@@ -71,7 +83,12 @@ initial begin
 		sendbyte(8'h22);
 		sendbyte(8'h22);
 		reset = 1'h1;
-		
+		#5
+		clk = 1'b1;
+		#4
+		clk = 1'b0;
+		#4;
+
 		#50
 		reset = 1'b0;
 		sendbyte(8'h00);
@@ -91,7 +108,12 @@ initial begin
 		sendbyte(8'h08);
 		sendbyte(8'h08);
 		reset = 1'h1;
-		
+		#5
+		clk = 1'b1;
+		#4
+		clk = 1'b0;
+		#4;
+
 			#50
 		reset = 1'b0;
 		sendbyte(8'h00);
@@ -111,6 +133,12 @@ initial begin
 		sendbyte(8'h08);
 		sendbyte(8'h08);
 		reset = 1'h1;
+		#5
+		clk = 1'b1;
+		#4
+		clk = 1'b0;
+		#4;
+
 			#50
 		reset = 1'b0;
 		sendbyte(8'h00);
