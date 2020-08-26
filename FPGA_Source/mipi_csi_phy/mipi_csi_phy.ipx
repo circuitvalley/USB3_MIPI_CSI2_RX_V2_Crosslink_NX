@@ -1,16 +1,16 @@
 <?xml version="1.0" ?>
-<RadiantModule architecture="LIFCL" date="2020 08 21 22:20:49" device="LIFCL-40" generator="ipgen" library="module" module="mipi_dphy" name="mipi_csi_phy" package="QFN72" source_format="Verilog" speed="9_High-Performance_1.0V" vendor="latticesemi.com" version="1.1.0">
+<RadiantModule architecture="LIFCL" date="2020 08 26 20:24:31" device="LIFCL-17" generator="ipgen" library="module" module="mipi_dphy" name="mipi_csi_phy" package="QFN72" source_format="Verilog" speed="9_High-Performance_1.0V" vendor="latticesemi.com" version="1.1.0">
  <Package>
-  <File modified="2020 08 21 22:20:49" name="rtl/mipi_csi_phy_bb.v" type="black_box_verilog"/>
-  <File modified="2020 08 21 22:20:49" name="mipi_csi_phy.cfg" type="cfg"/>
-  <File modified="2020 08 21 22:20:49" name="misc/mipi_csi_phy_tmpl.v" type="template_verilog"/>
-  <File modified="2020 08 21 22:20:49" name="misc/mipi_csi_phy_tmpl.vhd" type="template_vhdl"/>
-  <File modified="2020 08 21 22:20:49" name="rtl/mipi_csi_phy.v" type="top_level_verilog"/>
-  <File modified="2020 08 21 22:20:49" name="constraints/mipi_csi_phy.ldc" type="timing_constraints"/>
-  <File modified="2020 08 21 22:20:49" name="testbench/dut_params.v" type="dependency_file"/>
-  <File modified="2020 08 21 22:20:49" name="testbench/dut_inst.v" type="dependency_file"/>
-  <File modified="2020 08 21 22:20:49" name="component.xml" type="IP-XACT_component"/>
-  <File modified="2020 08 21 22:20:49" name="design.xml" type="IP-XACT_design"/>
+  <File modified="2020 08 26 20:24:31" name="rtl/mipi_csi_phy_bb.v" type="black_box_verilog"/>
+  <File modified="2020 08 26 20:24:31" name="mipi_csi_phy.cfg" type="cfg"/>
+  <File modified="2020 08 26 20:24:31" name="misc/mipi_csi_phy_tmpl.v" type="template_verilog"/>
+  <File modified="2020 08 26 20:24:31" name="misc/mipi_csi_phy_tmpl.vhd" type="template_vhdl"/>
+  <File modified="2020 08 26 20:24:31" name="rtl/mipi_csi_phy.v" type="top_level_verilog"/>
+  <File modified="2020 08 26 20:24:31" name="constraints/mipi_csi_phy.ldc" type="timing_constraints"/>
+  <File modified="2020 08 26 20:24:31" name="testbench/dut_params.v" type="dependency_file"/>
+  <File modified="2020 08 26 20:24:31" name="testbench/dut_inst.v" type="dependency_file"/>
+  <File modified="2020 08 26 20:24:31" name="component.xml" type="IP-XACT_component"/>
+  <File modified="2020 08 26 20:24:31" name="design.xml" type="IP-XACT_design"/>
   <File modified="2020 06 03 07:18:11" name="testbench/lscc_dphy_rx_model.v" type="testbench_verilog"/>
   <File modified="2020 01 27 01:41:06" name="testbench/tb_top.v" type="testbench_verilog"/>
  </Package>

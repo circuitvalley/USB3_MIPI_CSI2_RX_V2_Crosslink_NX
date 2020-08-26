@@ -1,5 +1,5 @@
 set architecture "LIFCL"
-set device "LIFCL-40"
+set device "LIFCL-17"
 set package "QFN72"
 set speed "9_High-Performance_1.0V"
 set WRAPPER_INST "lscc_mipi_dphy_inst"
