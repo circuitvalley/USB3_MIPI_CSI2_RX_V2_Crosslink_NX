@@ -119,8 +119,7 @@ mipi_csi_phy mipi_csi_phy_inst0(	.sync_clk_i(osc_clk),
 									.clk_byte_o(mipi_byte_clock), 
 									.ready_o()) ;
 									//.oclk(mipi_out_clk), //double to mipi_clock
-							 
-/*							  
+							 				  
 							  
 mipi_rx_byte_aligner mipi_rx_byte_aligner_0(	.clk_i(mipi_byte_clock),
 									.reset_i(byte_aligner_reset),
@@ -147,15 +146,15 @@ mipi_rx_byte_aligner mipi_rx_byte_aligner_3(	.clk_i(mipi_byte_clock),
 									.byte_i(mipi_data_raw[31:24]),
 									.byte_o( byte_aligned[31:24]),
 									.byte_valid_o(is_byte_valid[3]));
-*/
-mipi_rx_lane_aligner mipi_rx_lane_aligner(	.clk_i(!mipi_byte_clock),
+
+mipi_rx_lane_aligner mipi_rx_lane_aligner(	.clk_i(mipi_byte_clock),
 									.reset_i(byte_aligner_reset),
-									.bytes_valid_i({ready,ready,ready,ready}),
-									.byte_i(mipi_data_raw),
+									.bytes_valid_i(is_byte_valid),
+									.byte_i(byte_aligned),
 									.lane_valid_o(is_lane_aligned_valid),
 									.lane_byte_o(lane_aligned));
-
 /*
+
 mipi_csi_packet_decoder mipi_csi_packet_decoder_0(	.clk_i(mipi_byte_clock),
 													.data_valid_i(is_lane_aligned_valid),
 													.data_i(lane_aligned),
@@ -184,7 +183,7 @@ debayer_filter debayer_filter_0(.clk_i(mipi_byte_clock),
 
 rgb_to_yuv rgb_to_yuv_0(.clk_i(mipi_byte_clock),
 					    .reset_i(!frame_sync_in),
-					    .rgb_i(byte_aligned),
+					    .rgb_i(rgb_data),
 					    .rgb_valid_i(is_rgb_valid),
 					    .yuv_o(yuv_data),
 					    .yuv_valid_o(is_yuv_valid));
@@ -194,12 +193,11 @@ output_reformatter out_reformatter_0(  .clk_i(mipi_byte_clock),
 									 .line_sync_i(is_decoded_valid),
 									 .frame_sync_i(frame_sync_in),
 									 .output_clk_i(mipi_out_clk),
-									 .data_i(mipi_data_raw),
+									 .data_i(yuv_data),
 									 .data_in_valid_i(is_yuv_valid),
 									 .output_o(data_o),
 									 .output_valid_o(lsync_o));
 */
-
 assign pclk_o = mipi_byte_clock;
 //assign pclk_o = frame_sync_in? osc_clk: mipi_out_clk ; //output clock always available, slow when there is no mipi frame , fast from mipi_clk when mipi_clock is active
 assign fsync_o = !frame_sync_in;					  //activate fsync as soon as mipi frame is active

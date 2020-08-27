@@ -39,43 +39,59 @@ reg [3:0]i;
 reg [7:0] last_byte;
 wire [16:0]word;
 
-
+reg [7:0] output_reg;
+reg valid_reg;
 assign word = {byte_i, last_byte};
- 
 
-always @(negedge clk_i)
+
+always @(negedge clk_i or posedge reset_i)
 begin
 	if (reset_i)
 	begin
+		valid_reg <= 1'b0;
 		last_byte <= 8'h0;
-		byte_valid_o <= 1'b0;
 		offset <= 3'h0;
-		byte_o <= SYNC_BYTE; //first byte output is always sync byte once byte_valid_o is high
+		output_reg <= SYNC_BYTE; //first byte output is always sync byte once byte_valid_o is high
 	end
 	else
 	begin
-
-		last_byte <= byte_i;
 		
-		if (!byte_valid_o)
+		last_byte <= byte_i;
+
+		
+		if (!offset)
 		begin
 		 for (i= 8'h0; i < 8; i = i + 1'h1) //need to have loop 8 time not 9 because if input bytes are already aligned they will fall on last_byte or byte_i
 			begin
 				if ((word[(i + 1'h1 ) +: 8] == SYNC_BYTE))
 					begin
-						byte_valid_o <= 1'h1;
+						 valid_reg <= 1'b1;
 						offset  <= i[2:0] + 1'b1;
 					end
 			end
 		end
 		else
 		begin
-			byte_o <= word[offset +:8]; // from offset 8bits upwards
+			output_reg <= word[offset +:8]; // from offset 8bits upwards
 		end
 	end
 	
 end
-						
+
+
+always @(negedge clk_i or posedge reset_i)
+begin
+	if (reset_i)
+	begin
+		byte_o <= 8'h0;
+		byte_valid_o <= 1'b0;
+	end
+	else
+	begin
+		byte_o <= output_reg;
+		byte_valid_o <= valid_reg;
+	end
+end
 endmodule
 						
 						
