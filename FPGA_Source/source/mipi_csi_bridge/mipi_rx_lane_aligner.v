@@ -85,10 +85,7 @@ begin
 		
 		for (i= 4'h0; i < LANES; i = i + 1'h1)			
 		begin		
-			 if (!bytes_valid_i[i])
-			 begin
-				sync_byte_index[i] <= sync_byte_index[i] - 1'h1; //count delay of each sync, first one will be 0 delay, last one will max
-			 end
+				sync_byte_index[i] <= sync_byte_index[i] - !bytes_valid_i[i]; //count delay of each sync, first one will be 0 delay, last one will max
 		end	
 	end
 end

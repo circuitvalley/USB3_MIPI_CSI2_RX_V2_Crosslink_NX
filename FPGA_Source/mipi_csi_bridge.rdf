@@ -12,7 +12,7 @@
         <Source name="source/mipi_csi_bridge/mipi_csi_packet_decoder.v" type="Verilog" type_short="Verilog" excluded="TRUE">
             <Options/>
         </Source>
-        <Source name="source/mipi_csi_bridge/mipi_rx_byte_aligner.v" type="Verilog" type_short="Verilog" excluded="TRUE">
+        <Source name="source/mipi_csi_bridge/mipi_rx_byte_aligner.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="source/mipi_csi_bridge/mipi_rx_lane_aligner.v" type="Verilog" type_short="Verilog">
@@ -39,10 +39,10 @@
         <Source name="source/mipi_csi_bridge/tb_rx_byte_aligner.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
             <Options/>
         </Source>
-        <Source name="mipi_csi_phy/mipi_csi_phy.ipx" type="IPX_Module" type_short="IPX">
+        <Source name="source/mipi_csi_bridge/tb_rx_lane_aligner.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
             <Options/>
         </Source>
-        <Source name="line_ram_dp/line_ram_dp.ipx" type="IPX_Module" type_short="IPX" excluded="TRUE">
+        <Source name="mipi_csi_phy/mipi_csi_phy.ipx" type="IPX_Module" type_short="IPX">
             <Options/>
         </Source>
         <Source name="oscillator/oscillator.ipx" type="IPX_Module" type_short="IPX">
@@ -51,7 +51,7 @@
         <Source name="out_line_ram_dp/out_line_ram_dp.ipx" type="IPX_Module" type_short="IPX" excluded="TRUE">
             <Options/>
         </Source>
-        <Source name="out_line_ram_ldp/out_line_ram_ldp.ipx" type="IPX_Module" type_short="IPX" excluded="TRUE">
+        <Source name="line_ram_dp/line_ram_dp.ipx" type="IPX_Module" type_short="IPX" excluded="TRUE">
             <Options/>
         </Source>
         <Source name="mipi_csi_bridge.ldc" type="LSE Design Constraints File" type_short="LDC">
