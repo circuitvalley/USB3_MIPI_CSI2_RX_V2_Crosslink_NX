@@ -59,7 +59,7 @@ begin
 		last_byte <= byte_i;
 
 		
-		if (!offset)
+		if (!offset) //offset minimum 1
 		begin
 		 for (i= 8'h0; i < 8; i = i + 1'h1) //need to have loop 8 time not 9 because if input bytes are already aligned they will fall on last_byte or byte_i
 			begin

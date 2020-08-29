@@ -32,21 +32,28 @@ localparam [2:0]LANES = 3'h4;		//mipi csi have 2 or 4 lanes
 input clk_i;
 input [(LANES-1):0]bytes_valid_i;
 input [((8*LANES)-1):0]byte_i;
-output [((8*LANES)-1):0]lane_byte_o;
+output reg [((8*LANES)-1):0]lane_byte_o;
 output reg lane_valid_o;
 
 
 reg [(8*LANES)-1:0]last_bytes[(ALIGN_DEPTH-1):0];
 reg [2:0]sync_byte_index[(LANES-1):0];
+reg [2:0]sync_byte_index_reg[(LANES-1):0];
+reg [2:0]offset;
+
+reg [3:0]valid;
 reg lane_valid_reg;
 reg [3:0]i;
 
 // TODO: Find why async reset with !(|bytes_valid_i) cause whole system reset;
 
-assign lane_byte_o = {last_bytes[sync_byte_index[3]][31:24],
-						last_bytes[sync_byte_index[2]][23:16],
-						last_bytes[sync_byte_index[1]][15:8],
-						last_bytes[sync_byte_index[0]][7:0]};
+always @(posedge clk_i)
+begin
+lane_byte_o = {last_bytes[sync_byte_index_reg[3]][31:24],
+						last_bytes[sync_byte_index_reg[2]][23:16],
+						last_bytes[sync_byte_index_reg[1]][15:8],
+						last_bytes[sync_byte_index_reg[0]][7:0]};
+end 
 always @(posedge clk_i) 
 begin
 	if (reset_i )
@@ -70,22 +77,34 @@ begin
 end
 
 
+always @(posedge clk_i)
+begin
+	if (reset_i )
+	begin
+		valid <= 4'b0;
+	end
+	else
+	begin
+		valid <= bytes_valid_i;
+	end
+end
+
 always @(posedge clk_i ) 
 begin
-	if (reset_i || (!lane_valid_o && (!(|bytes_valid_i))))
-	begin
+	if (reset_i || (!lane_valid_o && (!(|valid)))) //always reset when lane_valid_o is active, valid
+	begin		
 		for (i= 4'h0; i <LANES; i = i + 1'h1)
 		begin
 			sync_byte_index[i] <= ALIGN_DEPTH - 1'b1;
 		end
-		//lane_byte_o <= 0;
+		offset <=  ALIGN_DEPTH - 2'h2;
 	end
 	else
 	begin
-		
+		offset <= offset - 1'b1;
 		for (i= 4'h0; i < LANES; i = i + 1'h1)			
-		begin		
-				sync_byte_index[i] <= sync_byte_index[i] - !bytes_valid_i[i]; //count delay of each sync, first one will be 0 delay, last one will max
+		begin	
+			sync_byte_index[i] <= sync_byte_index[i] - !valid[i]; //count delay of each sync, first one will be 0 delay, last one will max
 		end	
 	end
 end
@@ -95,14 +114,24 @@ always @(posedge clk_i)
 begin
 	if (reset_i)
 	begin
+		for (i= 4'h0; i < LANES; i = i + 1'h1)			
+		begin	
+			sync_byte_index_reg[i] <= 3'h0;
+		end	
 		lane_valid_o <= 1'h0;
-	//	lane_byte_o <= 0;
 	end
 	else
 	begin
-		lane_valid_reg <=( &bytes_valid_i)? 1'h1:(lane_valid_o && |bytes_valid_i)? 1'h1 : 1'h0; //one clock delay to the last packet
+		lane_valid_reg <=( &valid)? 1'h1:(lane_valid_o && |valid)? 1'h1 : 1'h0; //one clock delay to the last packet
 		lane_valid_o <= lane_valid_reg;
-		//lane_byte_o <= lane_byte_reg;
+		if (!lane_valid_reg)
+		begin
+			for (i= 4'h0; i < LANES; i = i + 1'h1)			
+			begin	
+				sync_byte_index_reg[i] <= sync_byte_index[i] - offset;
+			end	
+		end
 	end
 end
+
 endmodule

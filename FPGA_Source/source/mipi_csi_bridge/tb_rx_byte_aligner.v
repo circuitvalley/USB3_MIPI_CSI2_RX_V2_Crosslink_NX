@@ -46,7 +46,7 @@ initial begin
 		sendbyte(8'h00);
 		sendbyte(8'h00);
 		sendbyte(8'h00);
-		sendbyte(8'h77);
+		sendbyte(8'h77);  //B8 2B 11
 		sendbyte(8'h25);
 		sendbyte(8'h42);
 		sendbyte(8'hCE);
@@ -71,7 +71,7 @@ initial begin
 		sendbyte(8'h00);
 		sendbyte(8'h00);
 		sendbyte(8'h00);
-		sendbyte(8'h70);
+		sendbyte(8'h70);  //B8 20 50 11
 		sendbyte(8'h41);
 		sendbyte(8'hA0);
 		sendbyte(8'h22);
@@ -96,7 +96,7 @@ initial begin
 		sendbyte(8'h00);
 		sendbyte(8'h00);
 		sendbyte(8'h00);
-		sendbyte(8'h5C);
+		sendbyte(8'h5C);  //B8 2A 11
 		sendbyte(8'h95);
 		sendbyte(8'h08);
 		sendbyte(8'h1F);
@@ -121,7 +121,7 @@ initial begin
 		sendbyte(8'h00);
 		sendbyte(8'h00);
 		sendbyte(8'h00);
-		sendbyte(8'h5C);
+		sendbyte(8'h5C);	//B8 60 10
 		sendbyte(8'h30);
 		sendbyte(8'h88);
 		sendbyte(8'h08);
@@ -146,7 +146,7 @@ initial begin
 		sendbyte(8'h00);
 		sendbyte(8'h00);
 		sendbyte(8'h00);
-		sendbyte(8'hE0); 
+		sendbyte(8'hE0); 	//B8 60 11
 		sendbyte(8'h82);
 		sendbyte(8'h45);
 		sendbyte(8'h40);
