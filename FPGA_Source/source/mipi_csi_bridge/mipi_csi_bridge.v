@@ -73,7 +73,7 @@ wire [31:0]byte_aligned;
 wire [31:0]lane_aligned;
 wire [31:0]decoded_data;
 wire [2:0]packet_type;
-wire [31:0]packet_length;
+wire [15:0]packet_length;
 wire [63:0]unpacked_data;
 wire [191:0]rgb_data;
 wire [63:0]yuv_data;
@@ -90,7 +90,7 @@ oscillator oscillator_inst0(.hf_out_en_i(1'b1),
 							 .lf_clk_out_o(osc_clk));
 wire ready;
 	
-assign data_o = lane_aligned;
+assign data_o = unpacked_data;
 mipi_csi_phy mipi_csi_phy_inst0(	.sync_clk_i(osc_clk), 
 									.sync_rst_i(reset), 
 								   // .lmmi_clk_i(osc_clk), 
@@ -153,7 +153,7 @@ mipi_rx_lane_aligner mipi_rx_lane_aligner(	.clk_i(mipi_byte_clock),
 									.byte_i(byte_aligned),
 									.lane_valid_o(is_lane_aligned_valid),
 									.lane_byte_o(lane_aligned));
-/*
+
 
 mipi_csi_packet_decoder mipi_csi_packet_decoder_0(	.clk_i(mipi_byte_clock),
 													.data_valid_i(is_lane_aligned_valid),
@@ -171,7 +171,7 @@ mipi_rx_raw_depacker mipi_rx_raw_depacker_0(.clk_i(mipi_byte_clock),
 												.output_o(unpacked_data),
 												.output_valid_o(is_unpacked_valid));
 
-
+/*
 debayer_filter debayer_filter_0(.clk_i(mipi_byte_clock),
 								.reset_i(!frame_sync_in),
 								.line_valid_i(is_decoded_valid),

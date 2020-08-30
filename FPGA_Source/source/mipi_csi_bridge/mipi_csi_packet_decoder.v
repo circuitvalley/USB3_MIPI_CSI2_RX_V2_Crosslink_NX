@@ -38,41 +38,45 @@ input data_valid_i;
 input [31:0]data_i;
 output reg output_valid_o;
 output reg [31:0]data_o;
-output reg [31:0]packet_length_o;
+output reg [15:0]packet_length_o;
 output reg [2:0]packet_type_o;
 
-reg [31:0]packet_length_reg;
-
+reg [15:0]packet_length_reg;
+reg [31:0]data_reg;
 reg [31:0]last_data_i;
 
 always @(negedge clk_i)
 begin
 	if (data_valid_i)
 	begin
-		last_data_i <= data_i;
+		last_data_i <= data_reg;
 		output_valid_o <= |packet_length_reg;
-		data_o <= data_i;
 
 		if (|packet_length_reg)
 		begin
 			packet_length_reg <= packet_length_reg - LANES;
 		end
-		else if (last_data_i[7:0] == SYNC_BYTE && (data_i[7:0] == MIPI_CSI_PACKET_10bRAW || data_i[7:0] == MIPI_CSI_PACKET_12bRAW || data_i[7:0] == MIPI_CSI_PACKET_14bRAW))
+		else if (last_data_i[7:0] == SYNC_BYTE && (data_reg[7:0] == MIPI_CSI_PACKET_10bRAW || data_reg[7:0] == MIPI_CSI_PACKET_12bRAW || data_reg[7:0] == MIPI_CSI_PACKET_14bRAW))
 		begin
-			packet_type_o <= data_i[2:0];
-			packet_length_o <= {data_i[23:16], data_i[15:8]};
-			packet_length_reg <= {data_i[23:16], data_i[15:8]};
+			packet_type_o <= data_reg[2:0];
+			packet_length_o <= {data_reg[23:16], data_reg[15:8]};
+			packet_length_reg <= {data_reg[23:16], data_reg[15:8]};
 		end
 	end
 	else 
 	begin
 		packet_type_o <= 3'h0;
 		last_data_i <=32'h0;
-		data_o <=32'h0;
 		packet_length_o <= 32'h0;
 		packet_length_reg <= 32'h0;
 		output_valid_o <= 1'h0;
 	end
+end
+
+always @(negedge clk_i)
+begin
+		data_reg <= data_i;
+		data_o <= data_reg;
 end
 
 endmodule

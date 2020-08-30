@@ -9,7 +9,7 @@
         <Source name="source/mipi_csi_bridge/debayer_filter.v" type="Verilog" type_short="Verilog" excluded="TRUE">
             <Options/>
         </Source>
-        <Source name="source/mipi_csi_bridge/mipi_csi_packet_decoder.v" type="Verilog" type_short="Verilog" excluded="TRUE">
+        <Source name="source/mipi_csi_bridge/mipi_csi_packet_decoder.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="source/mipi_csi_bridge/mipi_rx_byte_aligner.v" type="Verilog" type_short="Verilog">
@@ -21,7 +21,7 @@
         <Source name="source/mipi_csi_bridge/mipi_rx_raw12_depacker.v" type="Verilog" type_short="Verilog" excluded="TRUE">
             <Options/>
         </Source>
-        <Source name="source/mipi_csi_bridge/mipi_rx_raw_depacker.v" type="Verilog" type_short="Verilog" excluded="TRUE">
+        <Source name="source/mipi_csi_bridge/mipi_rx_raw_depacker.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="source/mipi_csi_bridge/output_reformatter.v" type="Verilog" type_short="Verilog" excluded="TRUE">
@@ -40,6 +40,12 @@
             <Options/>
         </Source>
         <Source name="source/mipi_csi_bridge/tb_rx_lane_aligner.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="source/mipi_csi_bridge/tb_mipi_csi_packet_decoder.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
+            <Options/>
+        </Source>
+        <Source name="source/mipi_csi_bridge/tb_mipi_rx_raw_depacker.v" type="Verilog" type_short="Verilog" syn_sim="SimOnly">
             <Options/>
         </Source>
         <Source name="mipi_csi_phy/mipi_csi_phy.ipx" type="IPX_Module" type_short="IPX">

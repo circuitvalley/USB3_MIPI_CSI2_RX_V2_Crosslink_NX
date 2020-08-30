@@ -25,7 +25,7 @@ module debayer_filter(clk_i,
 					  data_valid_i,
 					  output_valid_o,
 					  output_o,
-					  debug_out);
+					  );
 					  
 localparam PIXEL_WIDTH = 16; //bits per color
 localparam INPUT_WIDTH = 64;	//4 x 16bit pixels from raw depacker module 
@@ -39,7 +39,6 @@ input [(INPUT_WIDTH -1):0] data_i;
 output reg output_valid_o;
 output reg [(OUTPUT_WIDTH-1):0]output_o;
 
-output reg [7:0]debug_out;
 
 
 
