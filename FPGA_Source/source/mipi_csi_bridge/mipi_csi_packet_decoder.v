@@ -58,10 +58,18 @@ begin
 		end
 		else if (last_data_i[7:0] == SYNC_BYTE && (data_reg[7:0] == MIPI_CSI_PACKET_10bRAW || data_reg[7:0] == MIPI_CSI_PACKET_12bRAW || data_reg[7:0] == MIPI_CSI_PACKET_14bRAW))
 		begin
+			//TODO: better timings could be achived by just copy whole data_reg into a reg and later take individual values from that reg
 			packet_type_o <= data_reg[2:0];
 			packet_length_o <= {data_reg[23:16], data_reg[15:8]};
 			packet_length_reg <= {data_reg[23:16], data_reg[15:8]};
 		end
+		else
+		begin
+			packet_length_reg <= 32'h0;
+			packet_type_o <= 3'h0;
+			packet_length_o <= 32'h0;
+		end
+		
 	end
 	else 
 	begin
