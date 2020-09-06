@@ -6,7 +6,7 @@
         <Source name="source/mipi_csi_bridge/mipi_csi_bridge.v" type="Verilog" type_short="Verilog">
             <Options top_module="mipi_bridge"/>
         </Source>
-        <Source name="source/mipi_csi_bridge/debayer_filter.v" type="Verilog" type_short="Verilog" excluded="TRUE">
+        <Source name="source/mipi_csi_bridge/debayer_filter.v" type="Verilog" type_short="Verilog">
             <Options/>
         </Source>
         <Source name="source/mipi_csi_bridge/mipi_csi_packet_decoder.v" type="Verilog" type_short="Verilog">
@@ -57,7 +57,7 @@
         <Source name="out_line_ram_dp/out_line_ram_dp.ipx" type="IPX_Module" type_short="IPX" excluded="TRUE">
             <Options/>
         </Source>
-        <Source name="line_ram_dp/line_ram_dp.ipx" type="IPX_Module" type_short="IPX" excluded="TRUE">
+        <Source name="line_ram_dp/line_ram_dp.ipx" type="IPX_Module" type_short="IPX">
             <Options/>
         </Source>
         <Source name="mipi_csi_bridge.ldc" type="LSE Design Constraints File" type_short="LDC">

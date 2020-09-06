@@ -90,7 +90,7 @@ oscillator oscillator_inst0(.hf_out_en_i(1'b1),
 							 .lf_clk_out_o(osc_clk));
 wire ready;
 	
-assign data_o = unpacked_data;
+assign data_o = rgb_data[31:0];
 mipi_csi_phy mipi_csi_phy_inst0(	.sync_clk_i(osc_clk), 
 									.sync_rst_i(reset), 
 								   // .lmmi_clk_i(osc_clk), 
@@ -171,16 +171,15 @@ mipi_rx_raw_depacker mipi_rx_raw_depacker_0(.clk_i(mipi_byte_clock),
 												.output_o(unpacked_data),
 												.output_valid_o(is_unpacked_valid));
 
-/*
+
 debayer_filter debayer_filter_0(.clk_i(mipi_byte_clock),
 								.reset_i(!frame_sync_in),
 								.line_valid_i(is_decoded_valid),
 								.data_i(unpacked_data),
 								.data_valid_i(is_unpacked_valid),
 								.output_o(rgb_data),
-								.output_valid_o(is_rgb_valid),
-								.debug_out());
-
+								.output_valid_o(is_rgb_valid));
+/*
 rgb_to_yuv rgb_to_yuv_0(.clk_i(mipi_byte_clock),
 					    .reset_i(!frame_sync_in),
 					    .rgb_i(rgb_data),
