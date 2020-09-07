@@ -44,7 +44,7 @@ reg [7:0]V[3:0];
 
 reg [23:0]not_used24; //to suppress warning from the tool 
 
-always @(negedge  clk_i)
+always @(posedge  clk_i)
 begin
 	yuv_valid_o <= rgb_valid_i; 
 	
