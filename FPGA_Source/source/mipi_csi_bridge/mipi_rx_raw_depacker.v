@@ -108,17 +108,14 @@ begin
 	
 	if (packet_type_reg == (MIPI_CSI_PACKET_10bRAW & 8'h07))
 	begin
-	
 		output_o <= output_10b;
 	end
 	else if (packet_type_reg == (MIPI_CSI_PACKET_12bRAW & 8'h07))
-	begin
-		
+	begin		
 		output_o <= output_12b;
 	end
 	else // if (packet_type_i == (MIPI_CSI_PACKET_14bRAW & 8'h07))
 	begin
-		
 		output_o <= output_14b;
 	end
 	
