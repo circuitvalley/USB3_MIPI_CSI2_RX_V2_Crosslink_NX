@@ -24,7 +24,7 @@ module debayer_filter(clk_i,
 					  data_i,
 					  data_valid_i,
 					  output_valid_o,
-					  output_o,
+					  output_o
 					  );
 					  
 localparam PIXEL_WIDTH = 16; //bits per color
@@ -60,8 +60,67 @@ reg [(PIXEL_WIDTH - 1):0]G2[3:0];
 reg [(PIXEL_WIDTH - 1):0]G3[3:0];
 reg [(PIXEL_WIDTH - 1):0]G4[3:0];
 
-reg [1:0]read_ram_index_pri; 	//which line RAM is being focused to read,  (not which address is being read from line RAM)
-reg [1:0]read_ram_index_sec; 	//which line RAM is being focused to read,  (not which address is being read from line RAM)
+
+reg [(PIXEL_WIDTH - 1):0]R1_even[3:0];
+reg [(PIXEL_WIDTH - 1):0]R2_even[3:0];
+reg [(PIXEL_WIDTH - 1):0]R3_even[3:0];
+reg [(PIXEL_WIDTH - 1):0]R4_even[3:0];
+
+reg [(PIXEL_WIDTH - 1):0]B1_even[3:0];
+reg [(PIXEL_WIDTH - 1):0]B2_even[3:0];
+reg [(PIXEL_WIDTH - 1):0]B3_even[3:0];
+reg [(PIXEL_WIDTH - 1):0]B4_even[3:0];
+
+reg [(PIXEL_WIDTH - 1):0]G1_even[3:0];
+reg [(PIXEL_WIDTH - 1):0]G2_even[3:0];
+reg [(PIXEL_WIDTH - 1):0]G3_even[3:0];
+reg [(PIXEL_WIDTH - 1):0]G4_even[3:0];
+
+
+
+
+reg [(PIXEL_WIDTH - 1):0]R1_odd[3:0];
+reg [(PIXEL_WIDTH - 1):0]R2_odd[3:0];
+reg [(PIXEL_WIDTH - 1):0]R3_odd[3:0];
+reg [(PIXEL_WIDTH - 1):0]R4_odd[3:0];
+
+reg [(PIXEL_WIDTH - 1):0]B1_odd[3:0];
+reg [(PIXEL_WIDTH - 1):0]B2_odd[3:0];
+reg [(PIXEL_WIDTH - 1):0]B3_odd[3:0];
+reg [(PIXEL_WIDTH - 1):0]B4_odd[3:0];
+
+reg [(PIXEL_WIDTH - 1):0]G1_odd[3:0];
+reg [(PIXEL_WIDTH - 1):0]G2_odd[3:0];
+reg [(PIXEL_WIDTH - 1):0]G3_odd[3:0];
+reg [(PIXEL_WIDTH - 1):0]G4_odd[3:0];
+
+
+
+
+reg [(PIXEL_WIDTH - 1):0]R1_REG[3:0];
+reg [(PIXEL_WIDTH - 1):0]R2_REG[3:0];
+reg [(PIXEL_WIDTH - 1):0]R3_REG[3:0];
+reg [(PIXEL_WIDTH - 1):0]R4_REG[3:0];
+
+reg [(PIXEL_WIDTH - 1):0]B1_REG[3:0];
+reg [(PIXEL_WIDTH - 1):0]B2_REG[3:0];
+reg [(PIXEL_WIDTH - 1):0]B3_REG[3:0];
+reg [(PIXEL_WIDTH - 1):0]B4_REG[3:0];
+
+reg [(PIXEL_WIDTH - 1):0]G1_REG[3:0];
+reg [(PIXEL_WIDTH - 1):0]G2_REG[3:0];
+reg [(PIXEL_WIDTH - 1):0]G3_REG[3:0];
+reg [(PIXEL_WIDTH - 1):0]G4_REG[3:0];
+
+
+reg [1:0]read_ram_index_even; 	//which line RAM is being focused to read for even lines,  (not which address is being read from line RAM)
+reg [1:0]read_ram_index_odd; 	//which line RAM is being focused to read for odd lines,  (not which address is being read from line RAM)
+reg [1:0]read_ram_index_even_plus_1; 
+reg [1:0]read_ram_index_odd_plus_1; 
+reg [1:0]read_ram_index_even_minus_1; 
+reg [1:0]read_ram_index_odd_minus_1; 
+
+
 reg [3:0]write_ram_select;	//which line RAM is begin written
 reg [10:0]line_address; 		//which address is being read and written 
 reg [(INPUT_WIDTH-1):0]last_ram_outputs[3:0]; //one clock cycle delayed output of line RAMs
@@ -71,20 +130,21 @@ reg [1:0]not_used2b;
 
 
 wire [(INPUT_WIDTH-1):0]RAM_out[3:0];
+reg [(INPUT_WIDTH-1):0]RAM_out_reg[3:0];
 wire ram_write_enable;
 wire ram_clk;
 
 assign ram_clk = !clk_i; 
 assign ram_write_enable = data_valid_i;
 
-
+reg [2:0]i;
 //line rams, total 4,
 //The way debayer is implemented in this code. Depending on pixel, we need minimum 2 lines and  maximum 3 lines in the ram, To be able to have access to neighboring pixels from previous and next line
 //There are many ways to implemented debayer, this code implement simplest possible bare minimum.
 // IMX219 Camera only output BGGR as defined by the IMX219 Driver in linux repo MEDIA_BUS_FMT_SBGGR10_1X10,  Camera datasheet incrorrectly defines output as RGGB and GBRG. Data sheet is incorrect in this case.
 // Bayer filter type does not affet test pattern. 
 
-line_ram_dp line0(.wr_clk_i(ram_clk), 
+line_ram_dp line0(.wr_clk_i(ram_clk), 		//data and address latch in on rising edge 
 				  .rd_clk_i(ram_clk), 
 				  .rst_i(reset_i), 
 				  .wr_clk_en_i(1'b1),					//TODO : Fix This 
@@ -120,7 +180,7 @@ line_ram_dp line2(.wr_clk_i(ram_clk),
 				  .rd_addr_i(line_address), 
 				  .rd_data_o(RAM_out[2])) ;
 
-line_ram_dp line3(.wr_clk_i(ram_clk), 
+line_ram_dp line3(.wr_clk_i(ram_clk), 	
 				  .rd_clk_i(ram_clk), 
 				  .rst_i(reset_i), 
 				  .wr_clk_en_i(1'b1),
@@ -136,17 +196,14 @@ line_ram_dp line3(.wr_clk_i(ram_clk),
 
 always @(posedge clk_i)	 //address should increment at falling edge of ram_clk. It is inverted from clk_i
 begin
-	if (reset_i)
+	if (reset_i || !line_valid_i)
 	begin
 		line_address <= 10'h0;
 	end
 	else
 	begin
-		if (!line_valid_i)
-		begin
-			line_address <= 10'h0;
-		end
-		else if (data_valid_i)
+
+		if (data_valid_i)
 		begin
 			line_address <= line_address + 1'b1;
 		end
@@ -160,14 +217,22 @@ begin
 	begin
 		write_ram_select <= 4'b1000;
 		line_counter <= 2'b0;
-		read_ram_index_sec <= 2'b01;
-		read_ram_index_pri <= 2'b01;
+		read_ram_index_odd <= 2'b01;
+		read_ram_index_even <= 2'b01;
+		read_ram_index_odd_plus_1 <= 2'd2;
+		read_ram_index_odd_minus_1 <= 2'd0;
+		read_ram_index_even_plus_1 <= 2'd2;
+		read_ram_index_even_minus_1 <= 2'd0;
 	end
 	else
 	begin
 		write_ram_select <= {write_ram_select[2:0], write_ram_select[3]};
-		read_ram_index_sec <= read_ram_index_sec + 1'b1;
-		read_ram_index_pri <= read_ram_index_pri + 1'b1;
+		read_ram_index_odd <= read_ram_index_odd + 1'b1;
+		read_ram_index_even <= read_ram_index_even + 1'b1;
+		read_ram_index_odd_plus_1 <= read_ram_index_odd_plus_1 + 1'b1;
+		read_ram_index_odd_minus_1 <= read_ram_index_odd_minus_1 + 1'b1;
+		read_ram_index_even_plus_1 <= read_ram_index_even_plus_1 + 1'b1;
+		read_ram_index_even_minus_1 <= read_ram_index_even_minus_1 + 1'b1;
 		
 		if (line_counter < 2'd3)
 		begin
@@ -176,194 +241,250 @@ begin
 	end
 end
 
+always @(posedge ram_clk)
+begin
+	
+		RAM_out_reg[0] <= RAM_out[0];
+		RAM_out_reg[1] <= RAM_out[1];
+		RAM_out_reg[2] <= RAM_out[2];
+		RAM_out_reg[3] <= RAM_out[3]; 
+		
+		last_ram_outputs[0] <= RAM_out_reg[0];
+		last_ram_outputs[1] <= RAM_out_reg[1];
+		last_ram_outputs[2] <= RAM_out_reg[2];
+		last_ram_outputs[3] <= RAM_out_reg[3];
+		
+		last_ram_outputs_stage2[0] <= last_ram_outputs[0];
+		last_ram_outputs_stage2[1] <= last_ram_outputs[1];
+		last_ram_outputs_stage2[2] <= last_ram_outputs[2];
+		last_ram_outputs_stage2[3] <= last_ram_outputs[3];			
+end
 
-always @(posedge clk_i)
+always @(negedge clk_i)
 begin
 	if (reset_i)
 	begin
 		output_valid_o <= 1'b0;
 		data_valid_reg <= 1'b0;
-		output_o <= 192'b0;
-		last_ram_outputs[0] <= 64'b0;
-		last_ram_outputs[1] <= 64'b0;
-		last_ram_outputs[2] <= 64'b0;
-		last_ram_outputs[3] <= 64'b0;
-		
-		last_ram_outputs_stage2[0] <= 64'b0;
-		last_ram_outputs_stage2[1] <= 64'b0;
-		last_ram_outputs_stage2[2] <= 64'b0;
-		last_ram_outputs_stage2[3] <= 64'b0;
 	end
 	else
 	begin
-		last_ram_outputs[0] <= RAM_out[0];
-		last_ram_outputs[1] <= RAM_out[1];
-		last_ram_outputs[2] <= RAM_out[2];
-		last_ram_outputs[3] <= RAM_out[3];
-		
-		last_ram_outputs_stage2[0] <= last_ram_outputs[0];
-		last_ram_outputs_stage2[1] <= last_ram_outputs[1];
-		last_ram_outputs_stage2[2] <= last_ram_outputs[2];
-		last_ram_outputs_stage2[3] <= last_ram_outputs[3];
-		
-		
 		if(line_counter > 9'd2)
 		begin
 			data_valid_reg <= data_valid_i; 
 			output_valid_o <= data_valid_reg;
-			//debug_out <= R1[0][9:2] & R2[0][9:2] & R3[0][9:2] & R4[0][9:2];
-			//debug_out <= {{2'd0, R1[1]} + R2[1] + R3[1] + R4[1]} >> 4;
 		end
 
-		if (!line_counter[0])	//even
-			begin
-				B1[0] =  last_ram_outputs[ read_ram_index_pri + 1'd1 ][63:48]; 
-				B2[0] =  last_ram_outputs[ read_ram_index_pri + 1'd1 ][63:48];
-				B3[0] =  last_ram_outputs[ read_ram_index_pri - 1'd1 ][63:48]; 
-				B4[0] =  last_ram_outputs[ read_ram_index_pri - 1'd1 ][63:48];
-									
-				G1[0] = 		last_ram_outputs[ read_ram_index_pri ][63:48];	
-				G2[0] = 		last_ram_outputs[ read_ram_index_pri ][63:48];
-				G3[0] = 		last_ram_outputs[ read_ram_index_pri ][63:48];
-				G4[0] = 		last_ram_outputs[ read_ram_index_pri ][63:48];
-				
-				R1[0] = 		last_ram_outputs[ read_ram_index_pri ][47:32]; 
-				R2[0] =  last_ram_outputs_stage2[ read_ram_index_pri ][15:0 ];
-				R3[0] = 		last_ram_outputs[ read_ram_index_pri ][47:32]; 
-				R4[0] =  last_ram_outputs_stage2[ read_ram_index_pri ][15:0 ];
 
-				B1[1] = last_ram_outputs[ read_ram_index_pri - 1'd1 ][63:48]; 
-				B2[1] = last_ram_outputs[ read_ram_index_pri + 1'd1 ][63:48];
-				B3[1] = last_ram_outputs[ read_ram_index_pri - 1'd1 ][31:16];
-				B4[1] = last_ram_outputs[ read_ram_index_pri + 1'd1 ][31:16];
-				
-				G1[1] = last_ram_outputs[ read_ram_index_pri		][63:48];	
-				G2[1] = last_ram_outputs[ read_ram_index_pri - 1'h1 ][47:32];	
-				G3[1] = last_ram_outputs[ read_ram_index_pri + 1'h1 ][47:32];	
-				G4[1] = last_ram_outputs[ read_ram_index_pri		][31:16];	
-				
-				R1[1] = last_ram_outputs[ read_ram_index_pri 		][47:32]; 
-				R2[1] = last_ram_outputs[ read_ram_index_pri 		][47:32]; 
-				R3[1] = last_ram_outputs[ read_ram_index_pri 		][47:32]; 
-				R4[1] = last_ram_outputs[ read_ram_index_pri 		][47:32]; 
-
-				B1[2] = last_ram_outputs[ read_ram_index_pri - 1'd1 ][31:16]; 
-				B2[2] = last_ram_outputs[ read_ram_index_pri + 1'd1 ][31:16];
-				B3[2] = last_ram_outputs[ read_ram_index_pri - 1'd1 ][31:16]; 
-				B4[2] = last_ram_outputs[ read_ram_index_pri + 1'd1 ][31:16];
-
-				G1[2] = last_ram_outputs[ read_ram_index_pri		][31:16];
-				G2[2] = last_ram_outputs[ read_ram_index_pri		][31:16];
-				G3[2] = last_ram_outputs[ read_ram_index_pri		][31:16];
-				G4[2] = last_ram_outputs[ read_ram_index_pri		][31:16];
-				
-				R1[2] = last_ram_outputs[ read_ram_index_pri 		][ 15:0 ];
-				R2[2] = last_ram_outputs[ read_ram_index_pri 		][47:32];
-				R3[2] = last_ram_outputs[ read_ram_index_pri 		][ 15:0 ];
-				R4[2] = last_ram_outputs[ read_ram_index_pri 		][47:32];
-				
-				B1[3] = 		 RAM_out[ read_ram_index_pri - 1'd1 ][63:48];	
-				B2[3] = last_ram_outputs[ read_ram_index_pri - 1'd1 ][31:16];
-				B3[3] = 		 RAM_out[ read_ram_index_pri + 1'd1 ][63:48];
-				B4[3] = last_ram_outputs[ read_ram_index_pri + 1'd1	][31:16];
-				
-				
-				G1[3] = last_ram_outputs[ read_ram_index_pri		][31:16];  	
-				G2[3] = last_ram_outputs[ read_ram_index_pri - 1'h1	][ 15:0 ];	
-				G3[3] = last_ram_outputs[ read_ram_index_pri + 1'h1 ][ 15:0 ];	
-				G4[3] = 		 RAM_out[ read_ram_index_pri 		][63:48];
-				
-				R1[3] = last_ram_outputs[ read_ram_index_pri		][ 15:0 ];
-				R2[3] = last_ram_outputs[ read_ram_index_pri		][ 15:0 ];
-				R3[3] = last_ram_outputs[ read_ram_index_pri		][ 15:0 ];
-				R4[3] = last_ram_outputs[ read_ram_index_pri		][ 15:0 ];
-					
-			end 	//end even rows
-			else
-			begin	//odd rows  //First line 
-				
-				B1[0] = 		last_ram_outputs[ read_ram_index_sec 		][63:48];
-				B2[0] = 		last_ram_outputs[ read_ram_index_sec 		][63:48];
-				B3[0] = 		last_ram_outputs[ read_ram_index_sec 		][63:48];
-				B4[0] = 		last_ram_outputs[ read_ram_index_sec 		][63:48];
-
-				G1[0] = 		last_ram_outputs[ read_ram_index_sec - 1'd1	][63:48];	
-				G2[0] = 		last_ram_outputs[ read_ram_index_sec + 1'd1 ][63:48];
-				G3[0] = 		last_ram_outputs[ read_ram_index_sec    	][47:32];
-				G4[0] =  last_ram_outputs_stage2[ read_ram_index_sec 		][15:0 ];
-								
-				R1[0] =  last_ram_outputs_stage2[ read_ram_index_sec - 1'd1 ][ 15:0 ];
-				R2[0] = 		last_ram_outputs[ read_ram_index_sec - 1'd1 ][47:32];
-				R3[0] =  last_ram_outputs_stage2[ read_ram_index_sec + 1'd1 ][ 15:0 ];
-				R4[0] = 		last_ram_outputs[ read_ram_index_sec + 1'd1 ][47:32];
-
-				
-				B1[1] = last_ram_outputs[ read_ram_index_sec 		][63:48]; 
-				B2[1] = last_ram_outputs[ read_ram_index_sec 		][31:16];
-				B3[1] = last_ram_outputs[ read_ram_index_sec 		][63:48]; 
-				B4[1] = last_ram_outputs[ read_ram_index_sec 		][31:16];
-				
-				G1[1] = last_ram_outputs[ read_ram_index_sec 		][47:32];
-				G2[1] = last_ram_outputs[ read_ram_index_sec 		][47:32];	
-				G3[1] = last_ram_outputs[ read_ram_index_sec 		][47:32];
-				G4[1] = last_ram_outputs[ read_ram_index_sec 		][47:32];
-				
-				R1[1] = last_ram_outputs[ read_ram_index_sec - 1'd1 ][47:32]; 
-				R2[1] = last_ram_outputs[ read_ram_index_sec + 1'd1 ][47:32]; 
-				R3[1] = last_ram_outputs[ read_ram_index_sec - 1'd1 ][47:32]; 
-				R4[1] = last_ram_outputs[ read_ram_index_sec + 1'd1 ][47:32]; 
-
-				B1[2] = last_ram_outputs[ read_ram_index_sec 		][31:16]; 
-				B2[2] = last_ram_outputs[ read_ram_index_sec 		][31:16];
-				B3[2] = last_ram_outputs[ read_ram_index_sec 		][31:16];
-				B4[2] = last_ram_outputs[ read_ram_index_sec 		][31:16];
-				
-				G1[2] = last_ram_outputs[ read_ram_index_sec - 1'd1 ][31:16];
-				G2[2] = last_ram_outputs[ read_ram_index_sec + 1'd1 ][31:16];
-				G3[2] = last_ram_outputs[ read_ram_index_sec 		][47:32];
-				G4[2] = last_ram_outputs[ read_ram_index_sec 		][ 15:0];
-				
-				R1[2] = last_ram_outputs[ read_ram_index_sec - 1'd1 ][ 15:0];
-				R2[2] = last_ram_outputs[ read_ram_index_sec - 1'd1 ][47:32];
-				R3[2] = last_ram_outputs[ read_ram_index_sec + 1'd1 ][ 15:0];
-				R4[2] = last_ram_outputs[ read_ram_index_sec + 1'd1 ][47:32];
-
-				B1[3] = 		 RAM_out[ read_ram_index_sec 		][63:48];
-				B2[3] = last_ram_outputs[ read_ram_index_sec 		][31:16];
-				B3[3] = 		 RAM_out[ read_ram_index_sec 		][63:48];
-				B4[3] = last_ram_outputs[ read_ram_index_sec 		][31:16];
-				
-				G1[3] = last_ram_outputs[ read_ram_index_sec 		][ 15:0 ]; 
-				G2[3] = last_ram_outputs[ read_ram_index_sec 		][ 15:0 ];	
-				G3[3] = last_ram_outputs[ read_ram_index_sec 		][ 15:0 ];	
-				G4[3] = 		 RAM_out[ read_ram_index_sec 		][ 15:0 ];
-				
-				R1[3] = last_ram_outputs[ read_ram_index_sec - 1'd1 ][ 15:0 ];
-				R2[3] = last_ram_outputs[ read_ram_index_sec + 1'd1 ][ 15:0 ];
-				R3[3] = last_ram_outputs[ read_ram_index_sec - 1'd1 ][ 15:0 ]; 
-				R4[3] = last_ram_outputs[ read_ram_index_sec + 1'd1 ][ 15:0 ]; 
-
-			end
-			
-			{not_used2b,output_o[191:176]} <= {{2'd0, R1[0]} + R2[0] + R3[0] + R4[0]} >> 2; //R
-			{not_used2b,output_o[175:160]} <= {{2'd0, G1[0]} + G2[0] + G3[0] + G4[0]} >> 2; //G
-			{not_used2b,output_o[159:144]}   <= {{2'd0, B1[0]} + B2[0] + B3[0] + B4[0]} >> 2; //B
-
-			{not_used2b,output_o[143:128]} <= {{2'd0, R1[1]} + R2[1] + R3[1] + R4[1]} >> 2; //R
-			{not_used2b,output_o[127:112]} <= {{2'd0, G1[1]} + G2[1] + G3[1] + G4[1]} >> 2; //G
-			{not_used2b,output_o[111:96]} <= {{2'd0, B1[1]} + B2[1] + B3[1] + B4[1]} >> 2; //B
-			
-			{not_used2b,output_o[95:80]} <= {{2'd0, R1[2]} + R2[2] + R3[2] + R4[2]} >> 2; //R
-			{not_used2b,output_o[79:64]} <= {{2'd0, G1[2]} + G2[2] + G3[2] + G4[2]} >> 2; //G
-			{not_used2b,output_o[63:48]} <= {{2'd0, B1[2]} + B2[2] + B3[2] + B4[2]} >> 2; //B
-			
-			{not_used2b,output_o[47:32]} <= {{2'd0, R1[3]} + R2[3] + R3[3] + R4[3]} >> 2; //R
-			{not_used2b,output_o[31:16]} <= {{2'd0, G1[3]} + G2[3] + G3[3] + G4[3]} >> 2; //G
-			{not_used2b,output_o[15:0]}   <= {{2'd0, B1[3]} + B2[3] + B3[3] + B4[3]} >> 2; //B	
 	end
 end
 
 
 
+always @(negedge clk_i)
+begin
+	
+				B1_even[0] <=  last_ram_outputs[ read_ram_index_even_plus_1 ][63:48]; 
+				B2_even[0] <=  last_ram_outputs[ read_ram_index_even_plus_1 ][63:48];
+				B3_even[0] <=  last_ram_outputs[ read_ram_index_even_minus_1 ][63:48]; 
+				B4_even[0] <=  last_ram_outputs[ read_ram_index_even_minus_1 ][63:48];
+									
+				G1_even[0] <= 		last_ram_outputs[ read_ram_index_even ][63:48];	
+				G2_even[0] <= 		last_ram_outputs[ read_ram_index_even ][63:48];
+				G3_even[0] <= 		last_ram_outputs[ read_ram_index_even ][63:48];
+				G4_even[0] <= 		last_ram_outputs[ read_ram_index_even ][63:48];
+				
+				R1_even[0] <= 		last_ram_outputs[ read_ram_index_even ][47:32]; 
+				R2_even[0] <=  last_ram_outputs_stage2[ read_ram_index_even ][15:0 ];
+				R3_even[0] <= 		last_ram_outputs[ read_ram_index_even ][47:32]; 
+				R4_even[0] <=  last_ram_outputs_stage2[ read_ram_index_even ][15:0 ];
 
+				B1_even[1] <= last_ram_outputs[ read_ram_index_even_minus_1 ][63:48]; 
+				B2_even[1] <= last_ram_outputs[ read_ram_index_even_plus_1 ][63:48];
+				B3_even[1] <= last_ram_outputs[ read_ram_index_even_minus_1 ][31:16];
+				B4_even[1] <= last_ram_outputs[ read_ram_index_even_plus_1 ][31:16];
+				
+				G1_even[1] <= last_ram_outputs[ read_ram_index_even		][63:48];	
+				G2_even[1] <= last_ram_outputs[ read_ram_index_even_minus_1][47:32];	
+				G3_even[1] <= last_ram_outputs[ read_ram_index_even_plus_1 ][47:32];	
+				G4_even[1] <= last_ram_outputs[ read_ram_index_even		][31:16];	
+				
+				R1_even[1] <= last_ram_outputs[ read_ram_index_even 		][47:32]; 
+				R2_even[1] <= last_ram_outputs[ read_ram_index_even 		][47:32]; 
+				R3_even[1] <= last_ram_outputs[ read_ram_index_even 		][47:32]; 
+				R4_even[1] <= last_ram_outputs[ read_ram_index_even 		][47:32]; 
+
+				B1_even[2] <= last_ram_outputs[ read_ram_index_even_minus_1 ][31:16]; 
+				B2_even[2] <= last_ram_outputs[ read_ram_index_even_plus_1 ][31:16];
+				B3_even[2] <= last_ram_outputs[ read_ram_index_even_minus_1 ][31:16]; 
+				B4_even[2] <= last_ram_outputs[ read_ram_index_even_plus_1 ][31:16];
+
+				G1_even[2] <= last_ram_outputs[ read_ram_index_even		][31:16];
+				G2_even[2] <= last_ram_outputs[ read_ram_index_even		][31:16];
+				G3_even[2] <= last_ram_outputs[ read_ram_index_even		][31:16];
+				G4_even[2] <= last_ram_outputs[ read_ram_index_even		][31:16];
+				
+				R1_even[2] <= last_ram_outputs[ read_ram_index_even 		][ 15:0 ];
+				R2_even[2] <= last_ram_outputs[ read_ram_index_even 		][47:32];
+				R3_even[2] <= last_ram_outputs[ read_ram_index_even 		][ 15:0 ];
+				R4_even[2] <= last_ram_outputs[ read_ram_index_even 		][47:32];
+				
+				B1_even[3] <= 		 RAM_out_reg[ read_ram_index_even_minus_1 ][63:48];	
+				B2_even[3] <= last_ram_outputs[ read_ram_index_even_minus_1 ][31:16];
+				B3_even[3] <= 		 RAM_out_reg[ read_ram_index_even_plus_1 ][63:48];
+				B4_even[3] <= last_ram_outputs[ read_ram_index_even_plus_1	][31:16];
+				
+				
+				G1_even[3] <= last_ram_outputs[ read_ram_index_even		][31:16];  	
+				G2_even[3] <= last_ram_outputs[ read_ram_index_even_minus_1][ 15:0 ];	
+				G3_even[3] <= last_ram_outputs[ read_ram_index_even_plus_1 ][ 15:0 ];	
+				G4_even[3] <= 		 RAM_out_reg[ read_ram_index_even 		][63:48];
+				
+				R1_even[3] <= last_ram_outputs[ read_ram_index_even		][ 15:0 ];
+				R2_even[3] <= last_ram_outputs[ read_ram_index_even		][ 15:0 ];
+				R3_even[3] <= last_ram_outputs[ read_ram_index_even		][ 15:0 ];
+				R4_even[3] <= last_ram_outputs[ read_ram_index_even		][ 15:0 ];
+
+
+
+
+				B1_odd[0] <= 		last_ram_outputs[ read_ram_index_odd 		][63:48];
+				B2_odd[0] <= 		last_ram_outputs[ read_ram_index_odd 		][63:48];
+				B3_odd[0] <= 		last_ram_outputs[ read_ram_index_odd 		][63:48];
+				B4_odd[0] <= 		last_ram_outputs[ read_ram_index_odd 		][63:48];
+
+				G1_odd[0] <= 		last_ram_outputs[ read_ram_index_odd_minus_1	][63:48];	
+				G2_odd[0] <= 		last_ram_outputs[ read_ram_index_odd_plus_1 ][63:48];
+				G3_odd[0] <= 		last_ram_outputs[ read_ram_index_odd    		][47:32];
+				G4_odd[0] <=  last_ram_outputs_stage2[ read_ram_index_odd 		][15:0 ];
+								
+				R1_odd[0] <=  last_ram_outputs_stage2[ read_ram_index_odd_minus_1 ][ 15:0 ];
+				R2_odd[0] <= 		last_ram_outputs[ read_ram_index_odd_minus_1 ][47:32];
+				R3_odd[0] <=  last_ram_outputs_stage2[ read_ram_index_odd_plus_1 ][ 15:0 ];
+				R4_odd[0] <= 		last_ram_outputs[ read_ram_index_odd_plus_1][47:32];
+
+				
+				B1_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][63:48]; 
+				B2_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
+				B3_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][63:48]; 
+				B4_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
+				
+				G1_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][47:32];
+				G2_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][47:32];	
+				G3_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][47:32];
+				G4_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][47:32];
+				
+				R1_odd[1] <= last_ram_outputs[ read_ram_index_odd_minus_1 ][47:32]; 
+				R2_odd[1] <= last_ram_outputs[ read_ram_index_odd_plus_1][47:32]; 
+				R3_odd[1] <= last_ram_outputs[ read_ram_index_odd_minus_1][47:32]; 
+				R4_odd[1] <= last_ram_outputs[ read_ram_index_odd_plus_1][47:32]; 
+
+				B1_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][31:16]; 
+				B2_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
+				B3_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
+				B4_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
+				
+				G1_odd[2] <= last_ram_outputs[ read_ram_index_odd_minus_1][31:16];
+				G2_odd[2] <= last_ram_outputs[ read_ram_index_odd_plus_1 ][31:16];
+				G3_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][47:32];
+				G4_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][ 15:0];
+				
+				R1_odd[2] <= last_ram_outputs[ read_ram_index_odd_minus_1 ][ 15:0];
+				R2_odd[2] <= last_ram_outputs[ read_ram_index_odd_minus_1][47:32];
+				R3_odd[2] <= last_ram_outputs[ read_ram_index_odd_plus_1 ][ 15:0];
+				R4_odd[2] <= last_ram_outputs[ read_ram_index_odd_plus_1 ][47:32];
+
+				B1_odd[3] <= 		 RAM_out_reg[ read_ram_index_odd 		][63:48];
+				B2_odd[3] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
+				B3_odd[3] <= 		 RAM_out_reg[ read_ram_index_odd 		][63:48];
+				B4_odd[3] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
+				
+				G1_odd[3] <= last_ram_outputs[ read_ram_index_odd 		][ 15:0 ]; 
+				G2_odd[3] <= last_ram_outputs[ read_ram_index_odd 		][ 15:0 ];	
+				G3_odd[3] <= last_ram_outputs[ read_ram_index_odd 		][ 15:0 ];	
+				G4_odd[3] <= 		 RAM_out_reg[ read_ram_index_odd 		][ 15:0 ];
+				
+				R1_odd[3] <= last_ram_outputs[ read_ram_index_odd_minus_1 ][ 15:0 ];
+				R2_odd[3] <= last_ram_outputs[ read_ram_index_odd_plus_1 ][ 15:0 ];
+				R3_odd[3] <= last_ram_outputs[ read_ram_index_odd_minus_1 ][ 15:0 ]; 
+				R4_odd[3] <= last_ram_outputs[ read_ram_index_odd_plus_1 ][ 15:0 ]; 
+				
+				
+		if (!line_counter[0])	//even
+			begin
+				for (i=3'b0; i < 4 ;i = i + 1)
+				begin
+					R1[i] <= R1_even[i];
+					G1[i] <= G1_even[i];
+					B1[i] <= B1_even[i];
+					R2[i] <= R2_even[i];
+					G2[i] <= G2_even[i];
+					B2[i] <= B2_even[i];
+					R3[i] <= R3_even[i];
+					G3[i] <= G3_even[i];
+					B3[i] <= B3_even[i];				
+					R4[i] <= R4_even[i];
+					G4[i] <= G4_even[i];
+					B4[i] <= B4_even[i];
+					
+				end
+			end 	//end even rows
+			else
+			begin	//odd rows  //First line 
+				
+			for (i=3'b0; i < 4 ;i = i + 1)
+				begin
+					R1[i] <= R1_odd[i];
+					G1[i] <= G1_odd[i];
+					B1[i] <= B1_odd[i];
+					R2[i] <= R2_odd[i];
+					G2[i] <= G2_odd[i];
+					B2[i] <= B2_odd[i];
+					R3[i] <= R3_odd[i];
+					G3[i] <= G3_odd[i];
+					B3[i] <= B3_odd[i];				
+					R4[i] <= R4_odd[i];
+					G4[i] <= G4_odd[i];
+					B4[i] <= B4_odd[i];
+					
+				end
+
+			end //end odd rows
+			
+			for (i=3'b0; i < 4 ;i = i + 1)
+			begin
+				R1_REG[i] <= R1[i];
+				G1_REG[i] <= G1[i];
+				B1_REG[i] <= B1[i];
+				R2_REG[i] <= R2[i];
+				G2_REG[i] <= G2[i];
+				B2_REG[i] <= B2[i];
+				R3_REG[i] <= R3[i];
+				G3_REG[i] <= G3[i];
+				B3_REG[i] <= B3[i];				
+				R4_REG[i] <= R4[i];
+				G4_REG[i] <= G4[i];
+				B4_REG[i] <= B4[i];
+
+			end
+
+
+			{not_used2b,output_o[191:176]} <= {{2'd0, R1_REG[0]} + R2_REG[0] + R3_REG[0] + R4_REG[0]} >> 2; //R
+			{not_used2b,output_o[175:160]} <= {{2'd0, G1_REG[0]} + G2_REG[0] + G3_REG[0] + G4_REG[0]} >> 2; //G
+			{not_used2b,output_o[159:144]}  <= {{2'd0, B1_REG[0]} + B2_REG[0] + B3_REG[0] + B4_REG[0]} >> 2; //B
+
+			{not_used2b,output_o[143:128]} <= {{2'd0, R1_REG[1]} + R2_REG[1] + R3_REG[1] + R4_REG[1]} >> 2; //R
+			{not_used2b,output_o[127:112]} <= {{2'd0, G1_REG[1]} + G2_REG[1] + G3_REG[1] + G4_REG[1]} >> 2; //G
+			{not_used2b,output_o[111:96]} <= {{2'd0, B1_REG[1]} + B2_REG[1] + B3_REG[1] + B4_REG[1]} >> 2; //B
+
+			{not_used2b,output_o[95:80]} <= {{2'd0, R1_REG[2]} + R2_REG[2] + R3_REG[2] + R4_REG[2]} >> 2; //R
+			{not_used2b,output_o[79:64]} <= {{2'd0, G1_REG[2]} + G2_REG[2] + G3_REG[2] + G4_REG[2]} >> 2; //G
+			{not_used2b,output_o[63:48]} <= {{2'd0, B1_REG[2]} + B2_REG[2] + B3_REG[2] + B4_REG[2]} >> 2; //B
+
+			{not_used2b,output_o[47:32]} <= {{2'd0, R1_REG[3]} + R2_REG[3] + R3_REG[3] + R4_REG[3]} >> 2; //R
+			{not_used2b,output_o[31:16]} <= {{2'd0, G1_REG[3]} + G2_REG[3] + G3_REG[3] + G4_REG[3]} >> 2; //G
+			{not_used2b,output_o[15:0]}   <= {{2'd0, B1_REG[3]} + B2_REG[3] + B3_REG[3] + B4_REG[3]} >> 2; //B	
+
+
+end
 endmodule
