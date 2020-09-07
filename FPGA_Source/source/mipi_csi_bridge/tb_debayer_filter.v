@@ -4,7 +4,7 @@ module tb_debayer_filter();
 	reg clk;
 	reg reset;
 	reg line_valid;
-	wire [39:0]bytes_o;
+	wire [63:0]bytes_o;
 	wire unpacked_valid;
 	wire [119:0]rgb_output;
 	wire output_valid;
@@ -57,6 +57,7 @@ wire synced;
 
 
 mipi_rx_raw_depacker ins2(	.clk_i(clk),
+						.packet_type_i(3'd3),
 						.data_valid_i(bytes_valid),
 						.data_i(bytes_i),
 						.output_valid_o(unpacked_valid),

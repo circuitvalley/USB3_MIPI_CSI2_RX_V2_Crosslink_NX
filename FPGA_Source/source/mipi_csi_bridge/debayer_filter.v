@@ -269,130 +269,130 @@ end
 always @(negedge clk_i)
 begin
 	
-				B1_even[0] <=  last_ram_outputs[ read_ram_index_even_plus_1 ][63:48]; 
-				B2_even[0] <=  last_ram_outputs[ read_ram_index_even_plus_1 ][63:48];
-				B3_even[0] <=  last_ram_outputs[ read_ram_index_even_minus_1 ][63:48]; 
-				B4_even[0] <=  last_ram_outputs[ read_ram_index_even_minus_1 ][63:48];
+				B1_even[0] =  last_ram_outputs[ read_ram_index_even_plus_1 ][63:48]; 
+				B2_even[0] =  last_ram_outputs[ read_ram_index_even_plus_1 ][63:48];
+				B3_even[0] =  last_ram_outputs[ read_ram_index_even_minus_1 ][63:48]; 
+				B4_even[0] =  last_ram_outputs[ read_ram_index_even_minus_1 ][63:48];
 									
-				G1_even[0] <= 		last_ram_outputs[ read_ram_index_even ][63:48];	
-				G2_even[0] <= 		last_ram_outputs[ read_ram_index_even ][63:48];
-				G3_even[0] <= 		last_ram_outputs[ read_ram_index_even ][63:48];
-				G4_even[0] <= 		last_ram_outputs[ read_ram_index_even ][63:48];
+				G1_even[0] = 		last_ram_outputs[ read_ram_index_even ][63:48];	
+				G2_even[0] = 		last_ram_outputs[ read_ram_index_even ][63:48];
+				G3_even[0] = 		last_ram_outputs[ read_ram_index_even ][63:48];
+				G4_even[0] = 		last_ram_outputs[ read_ram_index_even ][63:48];
 				
-				R1_even[0] <= 		last_ram_outputs[ read_ram_index_even ][47:32]; 
-				R2_even[0] <=  last_ram_outputs_stage2[ read_ram_index_even ][15:0 ];
-				R3_even[0] <= 		last_ram_outputs[ read_ram_index_even ][47:32]; 
-				R4_even[0] <=  last_ram_outputs_stage2[ read_ram_index_even ][15:0 ];
+				R1_even[0] = 		last_ram_outputs[ read_ram_index_even ][47:32]; 
+				R2_even[0] =  last_ram_outputs_stage2[ read_ram_index_even ][15:0 ];
+				R3_even[0] = 		last_ram_outputs[ read_ram_index_even ][47:32]; 
+				R4_even[0] =  last_ram_outputs_stage2[ read_ram_index_even ][15:0 ];
 
-				B1_even[1] <= last_ram_outputs[ read_ram_index_even_minus_1 ][63:48]; 
-				B2_even[1] <= last_ram_outputs[ read_ram_index_even_plus_1 ][63:48];
-				B3_even[1] <= last_ram_outputs[ read_ram_index_even_minus_1 ][31:16];
-				B4_even[1] <= last_ram_outputs[ read_ram_index_even_plus_1 ][31:16];
+				B1_even[1] = last_ram_outputs[ read_ram_index_even_minus_1 ][63:48]; 
+				B2_even[1] = last_ram_outputs[ read_ram_index_even_plus_1 ][63:48];
+				B3_even[1] = last_ram_outputs[ read_ram_index_even_minus_1 ][31:16];
+				B4_even[1] = last_ram_outputs[ read_ram_index_even_plus_1 ][31:16];
 				
-				G1_even[1] <= last_ram_outputs[ read_ram_index_even		][63:48];	
-				G2_even[1] <= last_ram_outputs[ read_ram_index_even_minus_1][47:32];	
-				G3_even[1] <= last_ram_outputs[ read_ram_index_even_plus_1 ][47:32];	
-				G4_even[1] <= last_ram_outputs[ read_ram_index_even		][31:16];	
+				G1_even[1] = last_ram_outputs[ read_ram_index_even		][63:48];	
+				G2_even[1] = last_ram_outputs[ read_ram_index_even_minus_1][47:32];	
+				G3_even[1] = last_ram_outputs[ read_ram_index_even_plus_1 ][47:32];	
+				G4_even[1] = last_ram_outputs[ read_ram_index_even		][31:16];	
 				
-				R1_even[1] <= last_ram_outputs[ read_ram_index_even 		][47:32]; 
-				R2_even[1] <= last_ram_outputs[ read_ram_index_even 		][47:32]; 
-				R3_even[1] <= last_ram_outputs[ read_ram_index_even 		][47:32]; 
-				R4_even[1] <= last_ram_outputs[ read_ram_index_even 		][47:32]; 
+				R1_even[1] = last_ram_outputs[ read_ram_index_even 		][47:32]; 
+				R2_even[1] = last_ram_outputs[ read_ram_index_even 		][47:32]; 
+				R3_even[1] = last_ram_outputs[ read_ram_index_even 		][47:32]; 
+				R4_even[1] = last_ram_outputs[ read_ram_index_even 		][47:32]; 
 
-				B1_even[2] <= last_ram_outputs[ read_ram_index_even_minus_1 ][31:16]; 
-				B2_even[2] <= last_ram_outputs[ read_ram_index_even_plus_1 ][31:16];
-				B3_even[2] <= last_ram_outputs[ read_ram_index_even_minus_1 ][31:16]; 
-				B4_even[2] <= last_ram_outputs[ read_ram_index_even_plus_1 ][31:16];
+				B1_even[2] = last_ram_outputs[ read_ram_index_even_minus_1 ][31:16]; 
+				B2_even[2] = last_ram_outputs[ read_ram_index_even_plus_1 ][31:16];
+				B3_even[2] = last_ram_outputs[ read_ram_index_even_minus_1 ][31:16]; 
+				B4_even[2] = last_ram_outputs[ read_ram_index_even_plus_1 ][31:16];
 
-				G1_even[2] <= last_ram_outputs[ read_ram_index_even		][31:16];
-				G2_even[2] <= last_ram_outputs[ read_ram_index_even		][31:16];
-				G3_even[2] <= last_ram_outputs[ read_ram_index_even		][31:16];
-				G4_even[2] <= last_ram_outputs[ read_ram_index_even		][31:16];
+				G1_even[2] = last_ram_outputs[ read_ram_index_even		][31:16];
+				G2_even[2] = last_ram_outputs[ read_ram_index_even		][31:16];
+				G3_even[2] = last_ram_outputs[ read_ram_index_even		][31:16];
+				G4_even[2] = last_ram_outputs[ read_ram_index_even		][31:16];
 				
-				R1_even[2] <= last_ram_outputs[ read_ram_index_even 		][ 15:0 ];
-				R2_even[2] <= last_ram_outputs[ read_ram_index_even 		][47:32];
-				R3_even[2] <= last_ram_outputs[ read_ram_index_even 		][ 15:0 ];
-				R4_even[2] <= last_ram_outputs[ read_ram_index_even 		][47:32];
+				R1_even[2] = last_ram_outputs[ read_ram_index_even 		][ 15:0 ];
+				R2_even[2] = last_ram_outputs[ read_ram_index_even 		][47:32];
+				R3_even[2] = last_ram_outputs[ read_ram_index_even 		][ 15:0 ];
+				R4_even[2] = last_ram_outputs[ read_ram_index_even 		][47:32];
 				
-				B1_even[3] <= 		 RAM_out_reg[ read_ram_index_even_minus_1 ][63:48];	
-				B2_even[3] <= last_ram_outputs[ read_ram_index_even_minus_1 ][31:16];
-				B3_even[3] <= 		 RAM_out_reg[ read_ram_index_even_plus_1 ][63:48];
-				B4_even[3] <= last_ram_outputs[ read_ram_index_even_plus_1	][31:16];
+				B1_even[3] = 		 RAM_out_reg[ read_ram_index_even_minus_1 ][63:48];	
+				B2_even[3] = last_ram_outputs[ read_ram_index_even_minus_1 ][31:16];
+				B3_even[3] = 		 RAM_out_reg[ read_ram_index_even_plus_1 ][63:48];
+				B4_even[3] = last_ram_outputs[ read_ram_index_even_plus_1	][31:16];
 				
 				
-				G1_even[3] <= last_ram_outputs[ read_ram_index_even		][31:16];  	
-				G2_even[3] <= last_ram_outputs[ read_ram_index_even_minus_1][ 15:0 ];	
-				G3_even[3] <= last_ram_outputs[ read_ram_index_even_plus_1 ][ 15:0 ];	
-				G4_even[3] <= 		 RAM_out_reg[ read_ram_index_even 		][63:48];
+				G1_even[3] = last_ram_outputs[ read_ram_index_even		][31:16];  	
+				G2_even[3] = last_ram_outputs[ read_ram_index_even_minus_1][ 15:0 ];	
+				G3_even[3] = last_ram_outputs[ read_ram_index_even_plus_1 ][ 15:0 ];	
+				G4_even[3] = 		 RAM_out_reg[ read_ram_index_even 		][63:48];
 				
-				R1_even[3] <= last_ram_outputs[ read_ram_index_even		][ 15:0 ];
-				R2_even[3] <= last_ram_outputs[ read_ram_index_even		][ 15:0 ];
-				R3_even[3] <= last_ram_outputs[ read_ram_index_even		][ 15:0 ];
-				R4_even[3] <= last_ram_outputs[ read_ram_index_even		][ 15:0 ];
-
-
+				R1_even[3] = last_ram_outputs[ read_ram_index_even		][ 15:0 ];
+				R2_even[3] = last_ram_outputs[ read_ram_index_even		][ 15:0 ];
+				R3_even[3] = last_ram_outputs[ read_ram_index_even		][ 15:0 ];
+				R4_even[3] = last_ram_outputs[ read_ram_index_even		][ 15:0 ];
 
 
-				B1_odd[0] <= 		last_ram_outputs[ read_ram_index_odd 		][63:48];
-				B2_odd[0] <= 		last_ram_outputs[ read_ram_index_odd 		][63:48];
-				B3_odd[0] <= 		last_ram_outputs[ read_ram_index_odd 		][63:48];
-				B4_odd[0] <= 		last_ram_outputs[ read_ram_index_odd 		][63:48];
 
-				G1_odd[0] <= 		last_ram_outputs[ read_ram_index_odd_minus_1	][63:48];	
-				G2_odd[0] <= 		last_ram_outputs[ read_ram_index_odd_plus_1 ][63:48];
-				G3_odd[0] <= 		last_ram_outputs[ read_ram_index_odd    		][47:32];
-				G4_odd[0] <=  last_ram_outputs_stage2[ read_ram_index_odd 		][15:0 ];
+
+				B1_odd[0] = 		last_ram_outputs[ read_ram_index_odd 		][63:48];
+				B2_odd[0] = 		last_ram_outputs[ read_ram_index_odd 		][63:48];
+				B3_odd[0] = 		last_ram_outputs[ read_ram_index_odd 		][63:48];
+				B4_odd[0] = 		last_ram_outputs[ read_ram_index_odd 		][63:48];
+
+				G1_odd[0] = 		last_ram_outputs[ read_ram_index_odd_minus_1	][63:48];	
+				G2_odd[0] = 		last_ram_outputs[ read_ram_index_odd_plus_1 ][63:48];
+				G3_odd[0] = 		last_ram_outputs[ read_ram_index_odd    		][47:32];
+				G4_odd[0] =  last_ram_outputs_stage2[ read_ram_index_odd 		][15:0 ];
 								
-				R1_odd[0] <=  last_ram_outputs_stage2[ read_ram_index_odd_minus_1 ][ 15:0 ];
-				R2_odd[0] <= 		last_ram_outputs[ read_ram_index_odd_minus_1 ][47:32];
-				R3_odd[0] <=  last_ram_outputs_stage2[ read_ram_index_odd_plus_1 ][ 15:0 ];
-				R4_odd[0] <= 		last_ram_outputs[ read_ram_index_odd_plus_1][47:32];
+				R1_odd[0] =  last_ram_outputs_stage2[ read_ram_index_odd_minus_1 ][ 15:0 ];
+				R2_odd[0] = 		last_ram_outputs[ read_ram_index_odd_minus_1 ][47:32];
+				R3_odd[0] =  last_ram_outputs_stage2[ read_ram_index_odd_plus_1 ][ 15:0 ];
+				R4_odd[0] = 		last_ram_outputs[ read_ram_index_odd_plus_1][47:32];
 
 				
-				B1_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][63:48]; 
-				B2_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
-				B3_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][63:48]; 
-				B4_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
+				B1_odd[1] = last_ram_outputs[ read_ram_index_odd 		][63:48]; 
+				B2_odd[1] = last_ram_outputs[ read_ram_index_odd 		][31:16];
+				B3_odd[1] = last_ram_outputs[ read_ram_index_odd 		][63:48]; 
+				B4_odd[1] = last_ram_outputs[ read_ram_index_odd 		][31:16];
 				
-				G1_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][47:32];
-				G2_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][47:32];	
-				G3_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][47:32];
-				G4_odd[1] <= last_ram_outputs[ read_ram_index_odd 		][47:32];
+				G1_odd[1] = last_ram_outputs[ read_ram_index_odd 		][47:32];
+				G2_odd[1] = last_ram_outputs[ read_ram_index_odd 		][47:32];	
+				G3_odd[1] = last_ram_outputs[ read_ram_index_odd 		][47:32];
+				G4_odd[1] = last_ram_outputs[ read_ram_index_odd 		][47:32];
 				
-				R1_odd[1] <= last_ram_outputs[ read_ram_index_odd_minus_1 ][47:32]; 
-				R2_odd[1] <= last_ram_outputs[ read_ram_index_odd_plus_1][47:32]; 
-				R3_odd[1] <= last_ram_outputs[ read_ram_index_odd_minus_1][47:32]; 
-				R4_odd[1] <= last_ram_outputs[ read_ram_index_odd_plus_1][47:32]; 
+				R1_odd[1] = last_ram_outputs[ read_ram_index_odd_minus_1 ][47:32]; 
+				R2_odd[1] = last_ram_outputs[ read_ram_index_odd_plus_1][47:32]; 
+				R3_odd[1] = last_ram_outputs[ read_ram_index_odd_minus_1][47:32]; 
+				R4_odd[1] = last_ram_outputs[ read_ram_index_odd_plus_1][47:32]; 
 
-				B1_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][31:16]; 
-				B2_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
-				B3_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
-				B4_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
+				B1_odd[2] = last_ram_outputs[ read_ram_index_odd 		][31:16]; 
+				B2_odd[2] = last_ram_outputs[ read_ram_index_odd 		][31:16];
+				B3_odd[2] = last_ram_outputs[ read_ram_index_odd 		][31:16];
+				B4_odd[2] = last_ram_outputs[ read_ram_index_odd 		][31:16];
 				
-				G1_odd[2] <= last_ram_outputs[ read_ram_index_odd_minus_1][31:16];
-				G2_odd[2] <= last_ram_outputs[ read_ram_index_odd_plus_1 ][31:16];
-				G3_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][47:32];
-				G4_odd[2] <= last_ram_outputs[ read_ram_index_odd 		][ 15:0];
+				G1_odd[2] = last_ram_outputs[ read_ram_index_odd_minus_1][31:16];
+				G2_odd[2] = last_ram_outputs[ read_ram_index_odd_plus_1 ][31:16];
+				G3_odd[2] = last_ram_outputs[ read_ram_index_odd 		][47:32];
+				G4_odd[2] = last_ram_outputs[ read_ram_index_odd 		][ 15:0];
 				
-				R1_odd[2] <= last_ram_outputs[ read_ram_index_odd_minus_1 ][ 15:0];
-				R2_odd[2] <= last_ram_outputs[ read_ram_index_odd_minus_1][47:32];
-				R3_odd[2] <= last_ram_outputs[ read_ram_index_odd_plus_1 ][ 15:0];
-				R4_odd[2] <= last_ram_outputs[ read_ram_index_odd_plus_1 ][47:32];
+				R1_odd[2] = last_ram_outputs[ read_ram_index_odd_minus_1 ][ 15:0];
+				R2_odd[2] = last_ram_outputs[ read_ram_index_odd_minus_1][47:32];
+				R3_odd[2] = last_ram_outputs[ read_ram_index_odd_plus_1 ][ 15:0];
+				R4_odd[2] = last_ram_outputs[ read_ram_index_odd_plus_1 ][47:32];
 
-				B1_odd[3] <= 		 RAM_out_reg[ read_ram_index_odd 		][63:48];
-				B2_odd[3] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
-				B3_odd[3] <= 		 RAM_out_reg[ read_ram_index_odd 		][63:48];
-				B4_odd[3] <= last_ram_outputs[ read_ram_index_odd 		][31:16];
+				B1_odd[3] = 		 RAM_out_reg[ read_ram_index_odd 		][63:48];
+				B2_odd[3] = last_ram_outputs[ read_ram_index_odd 		][31:16];
+				B3_odd[3] = 		 RAM_out_reg[ read_ram_index_odd 		][63:48];
+				B4_odd[3] = last_ram_outputs[ read_ram_index_odd 		][31:16];
 				
-				G1_odd[3] <= last_ram_outputs[ read_ram_index_odd 		][ 15:0 ]; 
-				G2_odd[3] <= last_ram_outputs[ read_ram_index_odd 		][ 15:0 ];	
-				G3_odd[3] <= last_ram_outputs[ read_ram_index_odd 		][ 15:0 ];	
-				G4_odd[3] <= 		 RAM_out_reg[ read_ram_index_odd 		][ 15:0 ];
+				G1_odd[3] = last_ram_outputs[ read_ram_index_odd 		][ 15:0 ]; 
+				G2_odd[3] = last_ram_outputs[ read_ram_index_odd 		][ 15:0 ];	
+				G3_odd[3] = last_ram_outputs[ read_ram_index_odd 		][ 15:0 ];	
+				G4_odd[3] = 		 RAM_out_reg[ read_ram_index_odd 		][ 15:0 ];
 				
-				R1_odd[3] <= last_ram_outputs[ read_ram_index_odd_minus_1 ][ 15:0 ];
-				R2_odd[3] <= last_ram_outputs[ read_ram_index_odd_plus_1 ][ 15:0 ];
-				R3_odd[3] <= last_ram_outputs[ read_ram_index_odd_minus_1 ][ 15:0 ]; 
-				R4_odd[3] <= last_ram_outputs[ read_ram_index_odd_plus_1 ][ 15:0 ]; 
+				R1_odd[3] = last_ram_outputs[ read_ram_index_odd_minus_1 ][ 15:0 ];
+				R2_odd[3] = last_ram_outputs[ read_ram_index_odd_plus_1 ][ 15:0 ];
+				R3_odd[3] = last_ram_outputs[ read_ram_index_odd_minus_1 ][ 15:0 ]; 
+				R4_odd[3] = last_ram_outputs[ read_ram_index_odd_plus_1 ][ 15:0 ]; 
 				
 				
 		if (!line_counter[0])	//even
