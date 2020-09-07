@@ -97,22 +97,6 @@ reg [(PIXEL_WIDTH - 1):0]G4_odd[3:0];
 
 
 
-reg [(PIXEL_WIDTH - 1):0]R1_REG[3:0];
-reg [(PIXEL_WIDTH - 1):0]R2_REG[3:0];
-reg [(PIXEL_WIDTH - 1):0]R3_REG[3:0];
-reg [(PIXEL_WIDTH - 1):0]R4_REG[3:0];
-
-reg [(PIXEL_WIDTH - 1):0]B1_REG[3:0];
-reg [(PIXEL_WIDTH - 1):0]B2_REG[3:0];
-reg [(PIXEL_WIDTH - 1):0]B3_REG[3:0];
-reg [(PIXEL_WIDTH - 1):0]B4_REG[3:0];
-
-reg [(PIXEL_WIDTH - 1):0]G1_REG[3:0];
-reg [(PIXEL_WIDTH - 1):0]G2_REG[3:0];
-reg [(PIXEL_WIDTH - 1):0]G3_REG[3:0];
-reg [(PIXEL_WIDTH - 1):0]G4_REG[3:0];
-
-
 reg [1:0]read_ram_index_even; 	//which line RAM is being focused to read for even lines,  (not which address is being read from line RAM)
 reg [1:0]read_ram_index_odd; 	//which line RAM is being focused to read for odd lines,  (not which address is being read from line RAM)
 reg [1:0]read_ram_index_even_plus_1; 
@@ -147,10 +131,10 @@ reg [2:0]i;
 line_ram_dp line0(.wr_clk_i(ram_clk), 		//data and address latch in on rising edge 
 				  .rd_clk_i(ram_clk), 
 				  .rst_i(reset_i), 
-				  .wr_clk_en_i(1'b1),					//TODO : Fix This 
+				  .wr_clk_en_i(ram_write_enable),					//TODO : Fix This 
 				  .rd_en_i(1'b1), 
 				  .rd_clk_en_i(1'b1), 
-				  .wr_en_i((|(write_ram_select & 4'b001)) && ram_write_enable), 
+				  .wr_en_i(write_ram_select[0]  ), 
 				  .wr_data_i(data_i), 
 				  .wr_addr_i(line_address), 
 				  .rd_addr_i(line_address), 
@@ -159,10 +143,10 @@ line_ram_dp line0(.wr_clk_i(ram_clk), 		//data and address latch in on rising ed
 line_ram_dp line1(.wr_clk_i(ram_clk), 
 				  .rd_clk_i(ram_clk), 
 				  .rst_i(reset_i), 
-				  .wr_clk_en_i(1'b1),
+				  .wr_clk_en_i(ram_write_enable),
 				  .rd_en_i(1'b1), 
 				  .rd_clk_en_i(1'b1), 
-				  .wr_en_i((|(write_ram_select & 4'b010)) && ram_write_enable), 
+				  .wr_en_i(write_ram_select[1]), 
 				  .wr_data_i(data_i), 
 				  .wr_addr_i(line_address), 
 				  .rd_addr_i(line_address), 
@@ -171,10 +155,10 @@ line_ram_dp line1(.wr_clk_i(ram_clk),
 line_ram_dp line2(.wr_clk_i(ram_clk), 
 				  .rd_clk_i(ram_clk), 
 				  .rst_i(reset_i), 
-				  .wr_clk_en_i(1'b1),
+				  .wr_clk_en_i(ram_write_enable),
 				  .rd_en_i(1'b1), 
 				  .rd_clk_en_i(1'b1), 
-				  .wr_en_i((|(write_ram_select & 4'b0100)) && ram_write_enable), 
+				  .wr_en_i(write_ram_select[2]), 
 				  .wr_data_i(data_i), 
 				  .wr_addr_i(line_address), 
 				  .rd_addr_i(line_address), 
@@ -183,10 +167,10 @@ line_ram_dp line2(.wr_clk_i(ram_clk),
 line_ram_dp line3(.wr_clk_i(ram_clk), 	
 				  .rd_clk_i(ram_clk), 
 				  .rst_i(reset_i), 
-				  .wr_clk_en_i(1'b1),
+				  .wr_clk_en_i(ram_write_enable),
 				  .rd_en_i(1'b1), 
 				  .rd_clk_en_i(1'b1), 
-				  .wr_en_i((|(write_ram_select & 4'b1000)) && ram_write_enable), 
+				  .wr_en_i(write_ram_select[3]), 
 				  .wr_data_i(data_i), 
 				  .wr_addr_i(line_address), 
 				  .rd_addr_i(line_address), 
@@ -196,13 +180,12 @@ line_ram_dp line3(.wr_clk_i(ram_clk),
 
 always @(posedge clk_i)	 //address should increment at falling edge of ram_clk. It is inverted from clk_i
 begin
-	if (reset_i || !line_valid_i)
+	if (!line_valid_i )
 	begin
 		line_address <= 10'h0;
 	end
 	else
 	begin
-
 		if (data_valid_i)
 		begin
 			line_address <= line_address + 1'b1;
@@ -227,6 +210,8 @@ begin
 	else
 	begin
 		write_ram_select <= {write_ram_select[2:0], write_ram_select[3]};
+
+			
 		read_ram_index_odd <= read_ram_index_odd + 1'b1;
 		read_ram_index_even <= read_ram_index_even + 1'b1;
 		read_ram_index_odd_plus_1 <= read_ram_index_odd_plus_1 + 1'b1;
@@ -451,39 +436,22 @@ begin
 
 			end //end odd rows
 			
-			for (i=3'b0; i < 4 ;i = i + 1)
-			begin
-				R1_REG[i] <= R1[i];
-				G1_REG[i] <= G1[i];
-				B1_REG[i] <= B1[i];
-				R2_REG[i] <= R2[i];
-				G2_REG[i] <= G2[i];
-				B2_REG[i] <= B2[i];
-				R3_REG[i] <= R3[i];
-				G3_REG[i] <= G3[i];
-				B3_REG[i] <= B3[i];				
-				R4_REG[i] <= R4[i];
-				G4_REG[i] <= G4[i];
-				B4_REG[i] <= B4[i];
 
-			end
+			{not_used2b,output_o[191:176]} <= {{2'd0, R1[0]} + R2[0] + R3[0] + R4[0]} >> 2; //R
+			{not_used2b,output_o[175:160]} <= {{2'd0, G1[0]} + G2[0] + G3[0] + G4[0]} >> 2; //G
+			{not_used2b,output_o[159:144]}  <= {{2'd0, B1[0]} + B2[0] + B3[0] + B4[0]} >> 2; //B
 
+			{not_used2b,output_o[143:128]} <= {{2'd0, R1[1]} + R2[1] + R3[1] + R4[1]} >> 2; //R
+			{not_used2b,output_o[127:112]} <= {{2'd0, G1[1]} + G2[1] + G3[1] + G4[1]} >> 2; //G
+			{not_used2b,output_o[111:96]} <= {{2'd0, B1[1]} + B2[1] + B3[1] + B4[1]} >> 2; //B
 
-			{not_used2b,output_o[191:176]} <= {{2'd0, R1_REG[0]} + R2_REG[0] + R3_REG[0] + R4_REG[0]} >> 2; //R
-			{not_used2b,output_o[175:160]} <= {{2'd0, G1_REG[0]} + G2_REG[0] + G3_REG[0] + G4_REG[0]} >> 2; //G
-			{not_used2b,output_o[159:144]}  <= {{2'd0, B1_REG[0]} + B2_REG[0] + B3_REG[0] + B4_REG[0]} >> 2; //B
+			{not_used2b,output_o[95:80]} <= {{2'd0, R1[2]} + R2[2] + R3[2] + R4[2]} >> 2; //R
+			{not_used2b,output_o[79:64]} <= {{2'd0, G1[2]} + G2[2] + G3[2] + G4[2]} >> 2; //G
+			{not_used2b,output_o[63:48]} <= {{2'd0, B1[2]} + B2[2] + B3[2] + B4[2]} >> 2; //B
 
-			{not_used2b,output_o[143:128]} <= {{2'd0, R1_REG[1]} + R2_REG[1] + R3_REG[1] + R4_REG[1]} >> 2; //R
-			{not_used2b,output_o[127:112]} <= {{2'd0, G1_REG[1]} + G2_REG[1] + G3_REG[1] + G4_REG[1]} >> 2; //G
-			{not_used2b,output_o[111:96]} <= {{2'd0, B1_REG[1]} + B2_REG[1] + B3_REG[1] + B4_REG[1]} >> 2; //B
-
-			{not_used2b,output_o[95:80]} <= {{2'd0, R1_REG[2]} + R2_REG[2] + R3_REG[2] + R4_REG[2]} >> 2; //R
-			{not_used2b,output_o[79:64]} <= {{2'd0, G1_REG[2]} + G2_REG[2] + G3_REG[2] + G4_REG[2]} >> 2; //G
-			{not_used2b,output_o[63:48]} <= {{2'd0, B1_REG[2]} + B2_REG[2] + B3_REG[2] + B4_REG[2]} >> 2; //B
-
-			{not_used2b,output_o[47:32]} <= {{2'd0, R1_REG[3]} + R2_REG[3] + R3_REG[3] + R4_REG[3]} >> 2; //R
-			{not_used2b,output_o[31:16]} <= {{2'd0, G1_REG[3]} + G2_REG[3] + G3_REG[3] + G4_REG[3]} >> 2; //G
-			{not_used2b,output_o[15:0]}   <= {{2'd0, B1_REG[3]} + B2_REG[3] + B3_REG[3] + B4_REG[3]} >> 2; //B	
+			{not_used2b,output_o[47:32]} <= {{2'd0, R1[3]} + R2[3] + R3[3] + R4[3]} >> 2; //R
+			{not_used2b,output_o[31:16]} <= {{2'd0, G1[3]} + G2[3] + G3[3] + G4[3]} >> 2; //G
+			{not_used2b,output_o[15:0]}   <= {{2'd0, B1[3]} + B2[3] + B3[3] + B4[3]} >> 2; //B	
 
 
 end
