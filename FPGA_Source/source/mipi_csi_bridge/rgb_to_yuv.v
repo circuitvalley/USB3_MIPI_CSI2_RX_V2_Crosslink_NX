@@ -116,23 +116,21 @@ reg [23:0]V2_ADD_STAGE4;
 
 
 reg [23:0]not_used24; //to suppress warning from the tool 
-reg [((PIXEL_DEPTH * PIXEL_PER_CLK * 3) - 1'd1):0]rgb_reg;
-always @(posedge  clk_i)
+always @(negedge  clk_i)
 begin
 	yuv_valid_o <= rgb_valid_i; 
-	rgb_reg <= rgb_i;
 	
-	Y0_R <= ( 77 * rgb_reg[176 +: 16]);
-	Y0_G <= (150 * rgb_reg[160 +: 16]);
-	Y0_B <= ( 29 * rgb_reg[144  +: 16]);
+	Y0_R <= ( 77 * rgb_i[176 +: 16]);
+	Y0_G <= (150 * rgb_i[160 +: 16]);
+	Y0_B <= ( 29 * rgb_i[144  +: 16]);
 	
-	U0_R <= (127 * rgb_reg[144 +: 16]);
-	U0_G <= (43  * rgb_reg[176 +: 16]);
-	U0_B <= ( 84 * rgb_reg[160 +: 16]);
+	U0_R <= (127 * rgb_i[144 +: 16]);
+	U0_G <= (43  * rgb_i[176 +: 16]);
+	U0_B <= ( 84 * rgb_i[160 +: 16]);
 	
-	V0_R <= (127 * rgb_reg[176 +: 16]);
-	V0_G <= (106 * rgb_reg[160 +: 16]);
-	V0_B <= ( 21 * rgb_reg[144  +: 16]);
+	V0_R <= (127 * rgb_i[176 +: 16]);
+	V0_G <= (106 * rgb_i[160 +: 16]);
+	V0_B <= ( 21 * rgb_i[144  +: 16]);
 	
 	Y0_ADD <= Y0_R + Y0_G;
 	
@@ -156,9 +154,9 @@ begin
 	{not_used24,U[0]} = U0_ADD_STAGE4;
 	{not_used24,V[0]} = V0_ADD_STAGE4;
 	
-	Y1_R <= ( 77 * rgb_reg[128  +: 16]);
-	Y1_G <= (150 * rgb_reg[112  +: 16]);
-	Y1_B <= (29 * rgb_reg[96  +: 16]);
+	Y1_R <= ( 77 * rgb_i[128  +: 16]);
+	Y1_G <= (150 * rgb_i[112  +: 16]);
+	Y1_B <= (29 * rgb_i[96  +: 16]);
 	
 	Y1_ADD <= Y1_R +  Y1_G;
 	Y1_ADD_STAGE2 <=  Y1_ADD + Y1_B;
@@ -168,17 +166,17 @@ begin
 	{not_used24,Y[1]} = Y1_ADD_STAGE4;
 	//U[1] and V[1]  not need to yuv422 sub sampling
 	
-	Y2_R <= ( 77 * rgb_reg[128 +: 16]);				//TODO May be incorrect index , because same as Y1_R
-	Y2_G <= (150 * rgb_reg[64  +: 16]);
-	Y2_B <= ( 29 * rgb_reg[48 +: 16]);
+	Y2_R <= ( 77 * rgb_i[128 +: 16]);				//TODO May be incorrect index , because same as Y1_R
+	Y2_G <= (150 * rgb_i[64  +: 16]);
+	Y2_B <= ( 29 * rgb_i[48 +: 16]);
 	
-	U2_R <= (127 * rgb_reg[48  +: 16]);
-	U2_G <= ( 43 * rgb_reg[128 +: 16]);
-	U2_B <= (84 * rgb_reg[64 +: 16]);
+	U2_R <= (127 * rgb_i[48  +: 16]);
+	U2_G <= ( 43 * rgb_i[128 +: 16]);
+	U2_B <= (84 * rgb_i[64 +: 16]);
 	
-	V2_R <=  (127 * rgb_reg[128 +: 16]);
-	V2_G <=  (106 * rgb_reg[64  +: 16]);
-	V2_B <=  (21 * rgb_reg[48 +: 16]);
+	V2_R <=  (127 * rgb_i[128 +: 16]);
+	V2_G <=  (106 * rgb_i[64  +: 16]);
+	V2_B <=  (21 * rgb_i[48 +: 16]);
 	
 	Y2_ADD <= Y2_R + Y2_G;
 	
@@ -203,9 +201,9 @@ begin
 	{not_used24,U[2]} = U2_ADD_STAGE4;
 	{not_used24,V[2]} = V2_ADD_STAGE4;
 	
-	Y3_R <= ( 77 * rgb_reg[32 +: 16]);
-	Y3_G <= (150 * rgb_reg[16 +: 16]);
-	Y3_B <= (29 * rgb_reg[0 +: 16]);
+	Y3_R <= ( 77 * rgb_i[32 +: 16]);
+	Y3_G <= (150 * rgb_i[16 +: 16]);
+	Y3_B <= (29 * rgb_i[0 +: 16]);
 	
 	Y3_ADD <= Y3_R + Y3_G;
 	Y3_ADD_STAGE2 <= Y3_ADD + Y3_B;
@@ -215,7 +213,7 @@ begin
 	{not_used24,Y[3]} =  Y3_ADD_STAGE4;
 	//U[3] and V[3]  not need to yuv422 sub sampling
 
-	yuv_o <= { Y[0], U[0], Y[1], V[0],		Y[2], U[2], Y[3], V[2]};
+	yuv_o = { Y[0], U[0], Y[1], V[0],		Y[2], U[2], Y[3], V[2]};
 	
 end
 

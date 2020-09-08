@@ -1,1 +1,2 @@
-create_clock -name {mipi_clk_p_in} -period 1 [get_nets mipi_clk_p_in]
+create_clock -name {mipi_clk_p_in} -period 1.666666667 [get_nets mipi_clk_p_in]
+create_clock -name {out_reformatter_0/output_clk_i} -period 8 [get_pins out_reformatter_0/output_clk_i]
